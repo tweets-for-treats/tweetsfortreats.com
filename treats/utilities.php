@@ -124,14 +124,13 @@ function saveToken($content){
  */
 //Deal with Settings Requests
 if(isset($_POST["hashtag"]) && !empty($_POST["hashtag"])){
-        $emptyMode = ($_POST["empty"] == 1 ? 1 : 0);
+
 	//Put in array and Remove all white spaces
 	$settings = array(
 		"hashtag" => preg_replace('/\s+/', '', $_POST["hashtag"]), 
 		"duration" => $_POST["duration"],
 		"user_id" => $_POST["user_id"],
-                "time_reset" => mktime($_POST["time_reset"]),
-                "empty" => $emptyMode
+                "time_reset" => mktime($_POST["time_reset"])
 	);
 	saveSettings($settings);
 	
@@ -216,7 +215,7 @@ function updatePeopleNbrTweets($where = 'id', $needle = 1, $tableName = 'tweetsf
 function resetPeopleNbrTweets($tableName = 'tweetsfortreats_people'){
 	$mysqli = connectToDatabase($tableName);
 	if(is_object($mysqli)){
-                $sql="UPDATE $tableName SET nbr_tweets = 1, reminder = NULL, following = NULL";
+                $sql="UPDATE $tableName SET nbr_tweets = 1, reminder = NULL";
 		//printl($sql);
                 //The query failed, reload page and ask the user to try again
 		$result = $mysqli->query($sql);

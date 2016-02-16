@@ -77,7 +77,7 @@ $users = get_users();
                         </select>
                     </span>
                     <!-- Set Time Reset -->
-                    <!-- <input style="display:none" type="time" class="reset" name="time_reset" value="<?php echo date("H:i",$savedSettings[0]['time_reset']) ?>"> -->
+                    <input style="display:none" type="time" class="reset" name="time_reset" value="<?php echo date("H:i",$savedSettings[0]['time_reset']) ?>">
                     <!-- Handle -->
                     <span class="select">
                         <span class="prefix handle"></span>
@@ -101,20 +101,10 @@ $users = get_users();
                             ?>
                         </select>
                     </span>
-		    <span>
-			<?php
-			$emptyChecked = "";
-			if(emptyMachine() === TRUE) $emptyChecked = "checked";
-			
-			echo '<label>Empty Mode is On</label>';
-			echo '<input type="checkbox" name="empty" '.$emptyChecked.' value="1">';
-			?>
-		    </span>
                     <!-- Save Settings -->
                     <input type="submit" value="Save Settings" class="btn-outline-inverted">
 			<a style="display: block" href="stats.php">View Statistics</a>
                 </form>
-		
             </div>
         </section>
 

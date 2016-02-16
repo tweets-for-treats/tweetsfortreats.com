@@ -219,21 +219,12 @@ if(isset($_GET['sendtweet']) && !empty($_GET['sendtweet'])){
  * If message is a duplicate, add extra exclamation marks
  */
 function sendNoDuplicatedTweets($recipient, $message){
-	
-    $result = sendTweet($recipient, $message);
-    $response = true;
-    
+	$result = sendTweet($recipient, $message);
     //printl($result);
     if($result->errors[0]->code == 187){
         $message = $message."!";
         sendNoDuplicatedTweets($recipient, $message);
     }
-    if($result->errors[0]->code == 429){
-        //rate limite reached
-        $response =  $result->errors[0]->code;
-    }
-    
-    return $response;
 }
 
 /**
@@ -342,41 +333,8 @@ function favouriteTweet($tweet_id){
         //printl($content);
         
         if(!isset($content->errors)) return TRUE;
-        else return $content->errors;
+        else return FALSE;
 
-    }
-}
-
-/*
- * Check friendships
- * $person = screen_name of the person using the machine
- * return Boolean
- */
-if(isset($_GET['friendships'])) var_dump(friendships($_GET['friendships']));
-function friendships($person){
-	$userDetails = get_user_details();
-	if($userDetails){
-        $userToken = $userDetails[0]['oauth_token'];
-		$userSecretToken = $userDetails[0]['oauth_token_secret'];
-        //$userScreenName = $userDetails[0]['screen_name'];
-        //$userId = $userDetails[0]['user_id'];
-        
-        $userScreenName = "reasonsto";
-        //$userScreenName = "drum_robot";
-        
-        //Assume not following by default
-        $relationship = FALSE;
-                
-        /* Create a TwitterOauth object with consumer/user tokens. */
-        $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userToken, $userSecretToken);
-        $content = $connection->get('friendships/show', array('source_screen_name' => $userScreenName, 'target_screen_name' => $person ));
-
-        
-        if(!isset($content->errors)){
-            if($content->relationship->target->following == 1) $relationship = TRUE;
-        }
-        
-        return $relationship;
     }
 }
 
@@ -386,7 +344,7 @@ function friendships($person){
  * return Boolean
  */
 if(isset($_GET['friendships'])) friendships($_GET['friendships']);
-function friendshipsWithLinkedAccount($person){
+function friendships($person){
 	$userDetails = get_user_details();
 	if($userDetails){
         $userToken = $userDetails[0]['oauth_token'];
@@ -400,6 +358,7 @@ function friendshipsWithLinkedAccount($person){
         /* Create a TwitterOauth object with consumer/user tokens. */
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userToken, $userSecretToken);
         $content = $connection->get('friendships/lookup', array('screen_name' => $person ));
+
         
         if(!isset($content->errors)){
             if($content[0]->connections[0] == "followed_by") $relationship = TRUE;
@@ -408,37 +367,6 @@ function friendshipsWithLinkedAccount($person){
         return $relationship;
     }
 }
-
-
-
-/*
- * Check friendships & save to db if following to reduce API calls
- * $person = user_id of the person using the machine
- * $tableName = table to check (tweetsfortreats_people or tweetsfortreats_people_website)
- * return Boolean
- */
-if(isset($_GET['person'])) var_dump( friends($_GET['person']));
-function friends($person, $tableName = 'tweetsfortreats_people'){
-    $friend = FALSE;
-    $f = selectDataDB(array('following'), 'screen_name', "'".$person."'", $tableName);
-    
-    //If not marked as following
-    if($f[0]['following'] === NULL){
-        //Check twitter
-        $follow = friendships($person);
-        //mark as following if twitter says so
-        if($follow){
-        //mark as following in db
-        updateGeneralDB(array('following' => 1), 'screen_name', "'".$person."'", $tableName);                       
-        $friend = TRUE;
-        }
-    }else{
-        $friend = TRUE;
-    }
-    
-    return $friend;
-}
-
 
 /*
  * TwitterAuth Test
@@ -471,6 +399,28 @@ function testLib($person){
     }
 }
 
+/*
+ * Check friendships & save to db if following to reduce API calls
+ * $person = user_id of the person using the machine
+ * $tableName = table to check (tweetsfortreats_people or tweetsfortreats_people_website)
+ * return Boolean
+ */
+//if(isset($_GET['person'])) friends($_GET['person']);
+function friends($person, $tableName = 'tweetsfortreats_people'){
+    $friend = FALSE;
+    $f = selectDataDB(array('following'), 'user_id', "'".$person."'", $tableName);
+    if($f[0]['following'] == NULL){
+        $follow = friendships($person);
+        //var_dump($follow);
+        if($follow){
+        //mark as following in db
+        updateGeneralDB(array('following' => 1), 'user_id', "'".$person."'", $tableName);                       
+        $friend = TRUE;
+        }
+    }else{
+        $friend = TRUE;
+    }
+}
 
 /*
  * Send Direct message
@@ -578,7 +528,7 @@ function authorizeApp(){
 
 
 /***************************************/
-/*      Search Twitter with follow     */
+/*   Search Twitter without follow     */
 /***************************************/
 
 function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
@@ -644,111 +594,81 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                 //Reply to users & favourite their tweet.
 				foreach($response->statuses as $tweet){
                     
-                    //Ignore Retweets!
-                    $retweet = false;
-                    if(isset($tweet->retweeted_status)) $retweet = true;
-                    
-                    //If this not a retweet
-                    if(!$retweet){
-                
-                    
-                        //Check if that person already got a reply (in case there's multiple tweets from the same person)
-                        if(!in_array($tweet->user->id, $peopleAlreadyRepliedToo)){
-                            
-                            $saveOn = TRUE;
-                            
-                            /*
-                             * SavePeople should be last in case there's a reminder send,
-                             * Sending reminder should stop code from keeping track of number of tweets from user
-                             *
-                             * Solution?
-                             * set $user_nbr_tweets to +1 of what's in the database at the start
-                             * SavePeople at the end (with the $peopleDetails array) if remimder wasn't sent
-                             * create a boolean to turn saving on or off
-                             */
-                            
-                            
+                    //Check if that person already got a reply (in case there's multiple tweets from the same person)
+                    if(!in_array($tweet->user->id, $peopleAlreadyRepliedToo)){
                         
-                            //Check how many times that person tweeted
-                            $user_nbr_tweets_array = selectDataDB(array('nbr_tweets'), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
-                            //Add one to the tweet count to include this tweet
-                            $user_nbr_tweets = $user_nbr_tweets_array[0]['nbr_tweets'] + 1;
+                        
+                        //Store peoples's handle & id in database for replies
+                        $peopleDetails = array(
+                            "user_id" => $tweet->user->id,
+                            "screen_name" => $tweet->user->screen_name,
+                            "nbr_tweets" => 1,
+                            "nbr_tweets_alltime" => 1,
+                            "created_at" => strtotime($tweet->created_at)
+                        );
+                        
+                        //If people already exist, the above array will be ignored
+                        savePeople($peopleDetails, 'tweetsfortreats_people');
+                    
+                        //Check how many times that person tweeted
+                        $user_nbr_tweets_array = selectDataDB(array('nbr_tweets'), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
+                        $user_nbr_tweets = $user_nbr_tweets_array[0]['nbr_tweets'];
+                        
+                        
+                        //Only bother if the person tweeted less the maximum allowed
+                        if($user_nbr_tweets <= $max_replies){
                             
+                            //Always favourite tweets
+                            favouriteTweet($tweet->id);
                             
-                            //Only bother if the person tweeted less the maximum allowed
-                            if($user_nbr_tweets <= $max_replies){
-                                
-                                //Always favourite tweets
-                                favouriteTweet($tweet->id);
-                                
-                                if($user_nbr_tweets == 1){
-                                    //Grab a random reply based on the number of times that person tweeted
-                                    $reply = $first_replies[array_rand($first_replies)];
-                                    //Reply to user
-                                    sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
-                                }
-                                if($user_nbr_tweets == 2){
-                                    //Grab a random reply based on the number of times that person tweeted & if following
-                                    if(friends($tweet->user->screen_name)) $reply = $second_replies_following[array_rand($second_replies_following)];
-                                    else $reply = $second_replies_not_following[array_rand($second_replies_not_following)];
-                                    
-                                    //Reply to user
-                                    sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
-                                    
-                                }
-                                if($user_nbr_tweets >= 3 && $user_nbr_tweets <= $max_replies){
-                                    //Grab a random reply based on the number of times that person tweeted
-                                    $reply = $replies[$user_nbr_tweets][array_rand($replies[$user_nbr_tweets])];
-                                    
-                                    //If person is following
-                                    if(friends($tweet->user->screen_name)){
-                                        //tweet the person
-                                        sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
-                                    //Person isn't following  
-                                    }else{
-                                        //check if they've been reminded about it
-                                        $reminded = selectDataDB(array('reminder'), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
-                                        //If the person has not been reminded to follow, do it now
-                                        if($reminded[0]['reminder'] === NULL){
-                                            //send reminder tweet once
-                                            sendNoDuplicatedTweets($tweet->user->screen_name, notFollowingReminder());
-                                            //mark as reminded in db
-                                            updateGeneralDB(array('reminder' => 1), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
-                                        }
-                                        //cancel tweet count
-                                        $saveOn = FALSE;
-                                    }
-                                    
-                                }
-                                
-                                
-                                //If everything went well, save the tweet
-                                if($saveOn){
-                                    
-                                    //Store peoples's handle & id in database for replies
-                                    $peopleDetails = array(
-                                        "user_id" => $tweet->user->id,
-                                        "screen_name" => $tweet->user->screen_name,
-                                        "nbr_tweets" => 1,
-                                        "nbr_tweets_alltime" => 1,
-                                        "created_at" => strtotime($tweet->created_at)
-                                    );
-                                    
-                                    //If people already exist, the above array will be ignored
-                                    savePeople($peopleDetails, 'tweetsfortreats_people');
-                                    
-                                    //Store person in array so we don't reply to him again (in case there's multiple tweets from the same person) 
-                                    $peopleAlreadyRepliedToo[] .= $tweet->user->id;
-                                    //Keep count of number of tweets, except the one that exceded the max number of replies
-                                    if($user_nbr_tweets<=$max_replies) $credits_for_machine += 1;
-                                    
-                                }
+                            if($user_nbr_tweets == 1){
+                                //Grab a random reply based on the number of times that person tweeted
+                                $reply = $first_replies[array_rand($first_replies)];
+                                //Reply to user
+                                sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
                             }
+                            if($user_nbr_tweets == 2){
+                                //Grab a random reply based on the number of times that person tweeted & if following
+                                //if(friends($tweet->user->screen_name)) $reply = $second_replies_following[array_rand($second_replies_following)];
+                                //else $reply = $second_replies_not_following[array_rand($second_replies_not_following)];
+                                
+                                //No following requiered
+                                $reply = $second_replies_following[array_rand($second_replies_following)];
+                                
+                                //Reply to user
+                                sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                            }
+                            if($user_nbr_tweets >= 3 && $user_nbr_tweets <= $max_replies){
+                                //Grab a random reply based on the number of times that person tweeted
+                                $reply = $replies[$user_nbr_tweets][array_rand($replies[$user_nbr_tweets])];
+                                /*
+                                //check if been reminded
+                                $reminded = selectDataDB(array('reminder'), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
+                                //Check if the person is following
+                                if(!$reminded[0]['reminder'] === NULL){
+                                    if(friends($tweet->user->screen_name)) sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                                //If not following just send one reminder
+                                }else {
+                                    sendNoDuplicatedTweets($tweet->user->screen_name, notFollowingReply());
+                                    //mark as reminded in db
+                                    updateGeneralDB(array('reminder' => 1), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
+                                }
+                                */
+                                
+                                //No following requiered
+                                sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                            }
+                            
+                            //Store person in array so we don't reply to him again (in case there's multiple tweets from the same person) 
+                            $peopleAlreadyRepliedToo[] .= $tweet->user->id;
+                            //Keep count of number of tweets, except the one that exceded the max number of replies
+                            if($user_nbr_tweets<=$max_replies) $credits_for_machine += 1;
                         }
                     }
+                    
 				}
 			}
-            echo "<mode>A</mode>";
+            
             echo "<nbr_tweets>".$credits_for_machine."</nbr_tweets>";
 			echo "<max_id_str>".$since_id."</max_id_str>";
             
@@ -820,43 +740,236 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
         
 }
 
+/***************************************/
+/*      Search Twitter with follow     */
+/***************************************/
+
+function searchTwitterWithFollow($result_type, $count, $since_id, $hastag = NULL){
+
+    //$since_id = NULL;
+    if($since_id == NULL) $since_id = 0;
+	    
+	//Set Search using the saved settings
+	$savedSettings = get_settings("settings");
+	if($hastag == NULL) $q = '%23'.$savedSettings[0]['hashtag'];
+	else $q = '%23'.$hastag;
+	
+	$token = getToken(false);
+	
+    
+    //printl($user_name);
+    
+    
+    //Search Hashtag and Handle
+    $user_name = "IWantTreats"; //for website query
+    if(ARDUINO){
+        $user_details = get_user_details();
+        $user_name = $user_details[0]["screen_name"];
+    }
+    
+    $query = "https://api.twitter.com/1.1/search/tweets.json?q=%40$user_name%20$q&result_type=$result_type&count=$count&since_id=$since_id";
+	
+    
+    //Search just a Hashtag
+	//$query = "https://api.twitter.com/1.1/search/tweets.json?q=$q&result_type=$result_type&count=$count&since_id=$since_id";
+	
+    
+	$response = apiRequest($query, $token);
+    
+	if($response){
+	
+		//echo "<hashtag>".$savedSettings['hashtag']."</hashtag>";
+		$nbrTweets = count($response->statuses);
+		//Use since_id_str if there's no tweets
+		$since_id = ($nbrTweets > 0) ? $response->search_metadata->max_id_str : $response->search_metadata->since_id_str;
+		
+        //printl($response);
+        
+		//ARDUINO
+		if(ARDUINO){
+			
+            //Grab all replies
+            $first_replies = arduino_first_replies();
+            $second_replies_not_following = arduino_second_replies_not_following();
+            $second_replies_following = arduino_second_replies_following();
+            $replies = arduino_replies();
+            $max_replies = max_replies_arduino();
+            
+            if($nbrTweets > 0){  
+                
+                //Add people into an array to only send one tweet per person
+                $peopleAlreadyRepliedToo = array();
+                //Credits for the machine, 1 tweet = 1 credit
+                $credits_for_machine = 0;
+                
+                //printl($response);
+                
+                //Reply to users & favourite their tweet.
+				foreach($response->statuses as $tweet){
+                    
+                    //Check if that person already got a reply (in case there's multiple tweets from the same person)
+                    if(!in_array($tweet->user->id, $peopleAlreadyRepliedToo)){
+                        
+                        
+                        //Store peoples's handle & id in database for replies
+                        $peopleDetails = array(
+                            "user_id" => $tweet->user->id,
+                            "screen_name" => $tweet->user->screen_name,
+                            "nbr_tweets" => 1,
+                            "nbr_tweets_alltime" => 1,
+                            "created_at" => strtotime($tweet->created_at)
+                        );
+                        
+                        //If people already exist, the above array will be ignored
+                        savePeople($peopleDetails, 'tweetsfortreats_people');
+                    
+                        //Check how many times that person tweeted
+                        $user_nbr_tweets_array = selectDataDB(array('nbr_tweets'), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
+                        $user_nbr_tweets = $user_nbr_tweets_array[0]['nbr_tweets'];
+                        
+                        
+                        //Only bother if the person tweeted less the maximum allowed
+                        if($user_nbr_tweets <= $max_replies){
+                            
+                            //Always favourite tweets
+                            favouriteTweet($tweet->id);
+                            
+                            if($user_nbr_tweets == 1){
+                                //Grab a random reply based on the number of times that person tweeted
+                                $reply = $first_replies[array_rand($first_replies)];
+                                //Reply to user
+                                sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                            }
+                            if($user_nbr_tweets == 2){
+                                //Grab a random reply based on the number of times that person tweeted & if following
+                                if(friends($tweet->user->screen_name)) $reply = $second_replies_following[array_rand($second_replies_following)];
+                                else $reply = $second_replies_not_following[array_rand($second_replies_not_following)];
+                                
+                                
+                                //Reply to user
+                                sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                            }
+                            if($user_nbr_tweets >= 3 && $user_nbr_tweets <= $max_replies){
+                                //Grab a random reply based on the number of times that person tweeted
+                                $reply = $replies[$user_nbr_tweets][array_rand($replies[$user_nbr_tweets])];
+                                
+                                //check if been reminded
+                                $reminded = selectDataDB(array('reminder'), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
+                                //Check if the person is following
+                                if(!$reminded[0]['reminder'] === NULL){
+                                    if(friends($tweet->user->screen_name)) sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                                //If not following just send one reminder
+                                }else {
+                                    sendNoDuplicatedTweets($tweet->user->screen_name, notFollowingReply());
+                                    //mark as reminded in db
+                                    updateGeneralDB(array('reminder' => 1), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
+                                }
+                               
+                            }
+                            
+                            //Store person in array so we don't reply to him again (in case there's multiple tweets from the same person) 
+                            $peopleAlreadyRepliedToo[] .= $tweet->user->id;
+                            //Keep count of number of tweets, except the one that exceded the max number of replies
+                            $credits_for_machine += 1;
+                        }
+                    }
+                    
+				}
+			}
+            
+            echo "<nbr_tweets>".$credits_for_machine."</nbr_tweets>";
+			echo "<max_id_str>".$since_id."</max_id_str>";
+            
+		}
+		//WEBSITE
+		else{
+			
+            $replies = website_replies();
+            $statuses_data = array();
+            
+			if($nbrTweets > 0){
+				$i = 0;
+				//Add people into an array to only send one tweet per person
+                $peopleAlreadyRepliedToo = array();
+                foreach($response->statuses as $tweet){
+				    //Check if that person already got a reply (in case there's multiple tweets from the same person)
+                    if(!in_array($tweet->user->id, $peopleAlreadyRepliedToo)){
+                        
+                        //Store peoples's handle & id in database for replies
+                        $peopleDetails = array(
+                            "user_id" => $tweet->user->id,
+                            "screen_name" => $tweet->user->screen_name,
+                            "nbr_tweets" => 1,
+                            "nbr_tweets_alltime" => 1,
+                            "created_at" => strtotime($tweet->created_at)
+                        );
+                        //If people already exist, the above array will be ignored
+                        savePeople($peopleDetails, 'tweetsfortreats_people_website');
+                        
+                        //Check how many times that person tweeted
+                        $user_nbr_tweets_array = selectDataDB(array('nbr_tweets'), 'user_id', $tweet->user->id, 'tweetsfortreats_people_website');
+                        $user_nbr_tweets = $user_nbr_tweets_array[0]['nbr_tweets'];
+                        
+                        //If user replies is superior of the number of replies, cap the value
+                        if($user_nbr_tweets >= count($replies)) $user_nbr_tweets = count($replies);
+                
+                        //Grab a random reply based on the number of times that person tweeted
+                        $reply = $replies[$user_nbr_tweets][array_rand($replies[$user_nbr_tweets])];
+                        //$reply = str_shuffle('qwertyuiop1234567890asdfghjklxzn');
+                       
+                        //Favourite only the first tweet by the user
+                        if($user_nbr_tweets == 1) $errorFav = favouriteTweet($tweet->id);
+                            
+                        //Reply to user
+                        $errorSend = sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                        
+                        //Do stuff
+                        $statuses_data[$i]["tweet_id"] = $tweet->id;
+                        $statuses_data[$i]["message"] = $tweet->text;
+                        $statuses_data[$i]["username"] = $tweet->user->screen_name;
+                        $statuses_data[$i]["error"] = array("fav" => $errorFav, "send" => $errorSend);
+
+                        $i++;
+
+                        //Store person in array so we don't reply to him again (in case there's multiple tweets from the same person)
+                        $peopleAlreadyRepliedToo[] .= $tweet->user->id;
+                    }
+				}
+			}
+			$return_data = array(
+				"nbr_tweets" => count($peopleAlreadyRepliedToo),
+				"since_id" => $since_id,
+				"statuses" => $statuses_data
+			);
+			return $return_data;
+		}
+		
+        }
+        
+}
 
 /**
  * Arduino queries
  *
  **/
 function arduino_get_queries(){
-    
     if(isset($_GET["treats"]) && !empty($_GET["treats"])){
-        //Empty Mode
-        if(emptyMachine() === TRUE){
-            echo "<mode>B</mode>";
-        }else{
-            
-            //API REQUEST
-            if(isset($_GET["result_type"])){
-                //searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"], urlencode($_GET["token"]));
-                searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"]);
-                //Exit php as we don't want to send back the rest the page
-                exit;
-            }
-            //GET TOKEN
-            /* if(isset($_GET["gettoken"])){
-                echo getToken();
-            //Exit php as we don't want to send back teh rest the page
+        //API REQUEST
+        if(isset($_GET["result_type"])){
+            //searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"], urlencode($_GET["token"]));
+            searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"]);
+            //Exit php as we don't want to send back the rest the page
             exit;
-            }*/
-            
         }
+        //GET TOKEN
+        /* if(isset($_GET["gettoken"])){
+            echo getToken();
+        //Exit php as we don't want to send back teh rest the page
+        exit;
+        }*/  
     }
 }
 
-function emptyMachine(){
-    $switch = FALSE;
-    $response = get_data_from_DB("tweetsfortreats_general", FALSE, "empty");
-    if($response == 1) $switch= TRUE;
-    return $switch;
-}
 
 /**
  * Website queries
