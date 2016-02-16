@@ -35,7 +35,7 @@ function follow_us(){
                                         "Follow us and you can have some more",
                                         "Just follow us on Twitter and you can have more #treats",
                                         "Just follow us on Twitter to get more",
-                                        "Just follow us and you can have some more",
+                                        "Just follow us and you can have some more"
                     );
                     $m = $r[array_rand($r)];
                     return $m;
@@ -72,7 +72,7 @@ function end_off(){
                                         "No more!",
                                         "That's it.",
                                         "Game over.",
-                                        "No more.",
+                                        "No more."
                     );
                     $m = $r[array_rand($r)];
                     return $m;
@@ -184,7 +184,7 @@ function arduino_replies(){
 /*
  * Follow us reminder
  */
-function notFollowingReply(){
+function notFollowingReminder(){
     return "Remember to start following us if you want more #treats today";
 }
 
