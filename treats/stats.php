@@ -25,6 +25,9 @@ function power_user($tableName){
           return $response[0];
 }
 
+function followVsnofollow($tableName){
+          
+}
 function all_users($tableName){
           $response = mysqli($tableName, "SELECT `screen_name`, `nbr_tweets_alltime` FROM $tableName ORDER BY `nbr_tweets_alltime` DESC", FALSE);
           return $response;

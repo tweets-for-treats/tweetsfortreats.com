@@ -1,6 +1,6 @@
 <?php
 
-define('HANDLETOFOLLOW', "@iwanttreats");
+define('HANDLETOFOLLOW', "@reasonsto");
 
 /**********************
  *
@@ -10,7 +10,51 @@ define('HANDLETOFOLLOW', "@iwanttreats");
  *
  **********************/
 
- 
+ /*
+  * Reasons Speakers
+  */
+
+function reasonsSpeakers(){
+                    $r = array(
+                                        "@Shantell_Martin",
+                                        "Tom Platten-Higgens @TomPH",
+                                        "@MikeBrondbjerg",
+                                        "@Stefanie Posavec @stefpos",
+                                        "@Wouter Verweirder",
+                                        "@TonyHarmer",
+                                        "@AnnieAtkins",
+                                        "James Hall @MrRio",
+                                        "Ben Foxhall @BenjaminBenBen",
+                                        "@Noma_Bar",
+                                        "@DominicWilcox",
+                                        "Andrew Spooner @AndSpo",
+                                        "Stacey Mulcahy @BitchWhoCodes",
+                                        "David Lenaerts @DerSchmale",
+                                        "@Jolyon_Russ",
+                                        "@JeffGreenspan",
+                                        "@RosHorner",
+                                        "@DanHett",
+                                        "John Hicks @HicksDesign",
+                                        "Martin Beeby @TheBeebs",
+                                        "Lin Wi-Yen @yiwen_lin",
+                                        "Jane ni Dhulchaointigh @sugru",
+                                        "Yuki Shimizu @yukoart",
+                                        "@LizzieMcullen",
+                                        "Remy Sharp @rem",
+                                        "@ChrisGannon",
+                                        "@CarlaDiana_",
+                                        "Mike Jones @FlashGen",
+                                        "@MrGarethJames",
+                                        "@DannyYount",
+                                        "Tom Vian @sfbtom",
+                                        "Jop Wielens @MrJop",
+                                        "@EvanRoth_"
+                    );
+                    $m = $r[array_rand($r)];
+                    return $m;
+  }
+  
+   
 /*
  * random greetings for first time
  */
@@ -51,14 +95,10 @@ function greetings_second_time_followers(){
                                "Hi again!",
                                "Hey you!",
                                "You again!",
-                               "I recognise you!",
+                               "I know you!",
                                "You're back!",
                                "Hello again!",
-                               "I've been expecting you.",
-                               "We've been expecting you.",
-                               "Back again?",
-                               "We've been expecting you.",
-                               "I've been expecting you."
+                               "Back again?"
                     );
                     $m = $r[array_rand($r)];
                     return $m;
@@ -92,7 +132,7 @@ function max_replies_arduino(){
  * First time reply (instructions)
  */
 function arduino_first_replies(){
-    $g = greetings();
+    /*$g = greetings();
     $replies = array(
                     $g." Once you see the big light activated on the #treats dispenser just put your hand in the hole to grab your #treats",
                     $g." Once you see the big light activated on the #treats dispenser just put your hand in the hole to get your #treats",
@@ -103,7 +143,8 @@ function arduino_first_replies(){
                     $g." When the big light is on, put your hand in the hole and grab yourself some #treats",
                     $g." We're preparing your #treats. When the big light is on, put your hand in the hole and grab yourself some"
                     );
-    return $replies;
+    return $replies;*/
+    return arduino_second_replies_following();
 }
 
 
@@ -117,37 +158,54 @@ function arduino_first_replies(){
 function arduino_second_replies_not_following(){
                     $follow_us = follow_us();
                     $replies = array(
-                                    "But we've only just met!".$follow_us,
-                                    "You keep tweetin' we'll keep treatin'".$follow_us,
+                                    "But we've only just met! ".$follow_us,
+                                    "You keep tweetin' we'll keep treatin' ".$follow_us,
                                     "Hey you're keen! ".$follow_us,
                                     "You're keen! ".$follow_us,
                                     "Sweet :) ".$follow_us,
                                     "Those #treats are good, aren't they? ".$follow_us,
                                     "You couldn't resist ;) ".$follow_us,
                                     "Trick or #Treat? No tricks here, just #treats ".$follow_us,
-                                    "Hey I recognise you! You're the #treat lover. ".$follow_us
+                                    "So you've got a treat addiction? ".$follow_us
                             );
                     return $replies;
 }
-
 
 /*
  * Second time instructions for Followers
  */
 function arduino_second_replies_following(){
-    $helloAgain = greetings_second_time_followers();
+    //$helloAgain = greetings_second_time_followers();
+    $helloAgain = greetings();
+    
+    $reasonsSpeakers = reasonsSpeakers();
+    
     $replies = array(
-                    $helloAgain." Hey you're a dedicated follower of treats!",
-                    $helloAgain." Fill yer boots!",
-                    $helloAgain." Back for more?",
-                    $helloAgain." You're keen!",
-                    $helloAgain." Remember, treats should form part of a balanced diet",
-                    $helloAgain." Go one, fill yer boots!",
-                    $helloAgain." Sweet :)",
-                    $helloAgain." Those #treats are good, aren't they?",
-                    $helloAgain." You couldn't resist ;)",
-                    $helloAgain." You couldn't resist!",
-                    
+                    $helloAgain." Make sure you leave some for ".$reasonsSpeakers,
+                    $helloAgain." If you've got any black or white ones leave them for @Shantell_Martin",
+                    $helloAgain." Can you ask @MikeBrondbjerg how he'd visualise this?",
+                    $helloAgain." Stefanie Posavec @stefpos would say you're just gathering data here",
+                    $helloAgain." I wonder what @Wouter Verweirder would make of this?",
+                    $helloAgain." Remember, these aren't coming from Adobe's Creative Cloud",
+                    $helloAgain." Can you ask @AnnieAtkins if we can get an Oscar for this?",
+                    $helloAgain." James Hall @MrRio is watching you!",
+                    $helloAgain." @BenjaminBenBen Ben Foxhall's advice is to store this data in your stomach",
+                    $helloAgain." @Noma_Bar says: fill the negative space in your tummy",
+                    $helloAgain." Imagine what @DominicWilcox would make out of these",
+                    $helloAgain." @AndSpo Andrew Spooner's advice would be to capture this data - in your gob!",
+                    $helloAgain." @BitchWhoCodes Stacey Mulcahy eats the red ones to alleviate creative block",
+                    $helloAgain." Your leading by example - @JeffGreenspan would be proud!",
+                    $helloAgain." This is the creative happiness that @RosHorner is talking about!",
+                    $helloAgain." These aren't @DanHett 's earrings!",
+                    $helloAgain." These aren't from Jon Hicks' shed! @HicksDesign",
+                    $helloAgain." Did you know there was a bit of Javascript behind this reply? @thebeebs",
+                    $helloAgain." Don't tell Lin Yi-Wen @yiwen_lin but these are dead fire flies",
+                    $helloAgain." If you can't work out what to do with your treats ask @sugru",
+                    $helloAgain." Don't worry, Yuki Shimizu @yukoart would say you're never too old for treats!",
+                    $helloAgain." @LizzieMcullen reckons these will help you cope with the modern world!",
+                    $helloAgain." Open source these treats amongst your friends and make Remy Sharp @rem proud!",
+                    $helloAgain." Mike Jones @FlashGen thinks these treats are unicorn poop!",
+                    $helloAgain." Misuse these treats for self-empowerment @EvanRoth_"
                     );
     return $replies;
 }
@@ -163,7 +221,7 @@ function arduino_replies(){
                             "I hope your gym membership hasn't expired because it looks like you'll need it tomorrow",
                             "Did you skip breakfast today?",
                             "Do you know these aren't your five-a-day?",
-                            "If you don't ask, you don't get. Is that your moto?",
+                            "If you don't ask, you don't get. Is that your motto?",
                             "I think people are looking at you strange, maybe it's time to stop",
                             "Maybe it's time to stop, I think people are looking at you strange",
                             "Hey, this doesn't count as a proper meal you know"
@@ -203,7 +261,7 @@ function website_replies(){
     $helloAgain = greetings_second_time_followers();
     $replies = array(
         1 => array(
-            $g." Thanks for tweeting. Those guys have been waiting for ever to get a treat.",
+            $g." Thanks for tweeting.",
             $g." Thanks for tweeting, have another go!",
             $g." Nice one! Those guys have been waiting for ever to get a treat ;)",
             $g." Those guys have been waiting for ever to get a treat ;)",
@@ -247,6 +305,5 @@ function website_replies(){
     );
     return $replies;
 }
-
 
 ?>

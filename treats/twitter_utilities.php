@@ -746,10 +746,9 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                             }
                         }
                     }
-                    
 				}
 			}
-            
+            echo "<mode>A</mode>";
             echo "<nbr_tweets>".$credits_for_machine."</nbr_tweets>";
 			echo "<max_id_str>".$since_id."</max_id_str>";
             
@@ -827,23 +826,37 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
  *
  **/
 function arduino_get_queries(){
+    
     if(isset($_GET["treats"]) && !empty($_GET["treats"])){
-        //API REQUEST
-        if(isset($_GET["result_type"])){
-            //searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"], urlencode($_GET["token"]));
-            searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"]);
-            //Exit php as we don't want to send back the rest the page
+        //Empty Mode
+        if(emptyMachine() === TRUE){
+            echo "<mode>B</mode>";
+        }else{
+            
+            //API REQUEST
+            if(isset($_GET["result_type"])){
+                //searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"], urlencode($_GET["token"]));
+                searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"]);
+                //Exit php as we don't want to send back the rest the page
+                exit;
+            }
+            //GET TOKEN
+            /* if(isset($_GET["gettoken"])){
+                echo getToken();
+            //Exit php as we don't want to send back teh rest the page
             exit;
+            }*/
+            
         }
-        //GET TOKEN
-        /* if(isset($_GET["gettoken"])){
-            echo getToken();
-        //Exit php as we don't want to send back teh rest the page
-        exit;
-        }*/  
     }
 }
 
+function emptyMachine(){
+    $switch = FALSE;
+    $response = get_data_from_DB("tweetsfortreats_general", FALSE, "empty");
+    if($response == 1) $switch= TRUE;
+    return $switch;
+}
 
 /**
  * Website queries
