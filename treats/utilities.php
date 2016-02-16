@@ -215,7 +215,7 @@ function updatePeopleNbrTweets($where = 'id', $needle = 1, $tableName = 'tweetsf
 function resetPeopleNbrTweets($tableName = 'tweetsfortreats_people'){
 	$mysqli = connectToDatabase($tableName);
 	if(is_object($mysqli)){
-                $sql="UPDATE $tableName SET nbr_tweets = 1, reminder = NULL";
+                $sql="UPDATE $tableName SET nbr_tweets = 1, reminder = NULL, following = NULL";
 		//printl($sql);
                 //The query failed, reload page and ask the user to try again
 		$result = $mysqli->query($sql);

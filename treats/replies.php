@@ -1,5 +1,7 @@
 <?php
 
+define('HANDLETOFOLLOW', "@iwanttreats");
+
 /**********************
  *
  *
@@ -30,12 +32,12 @@ function greetings(){
  */
 function follow_us(){
                     $r = array(
-                                        "Follow us on Twitter and you can have more #treats",
-                                        "Follow us on Twitter to get more",
-                                        "Follow us and you can have some more",
-                                        "Just follow us on Twitter and you can have more #treats",
-                                        "Just follow us on Twitter to get more",
-                                        "Just follow us and you can have some more"
+                                        "Follow ".HANDLETOFOLLOW." and you can have more #treats",
+                                        "Follow ".HANDLETOFOLLOW." to get more",
+                                        "Follow ".HANDLETOFOLLOW." and you can have some more",
+                                        "Just follow ".HANDLETOFOLLOW." and you can have more #treats",
+                                        "Just follow ".HANDLETOFOLLOW." to get more",
+                                        "Just follow ".HANDLETOFOLLOW." and you can have some more"
                     );
                     $m = $r[array_rand($r)];
                     return $m;
@@ -185,7 +187,7 @@ function arduino_replies(){
  * Follow us reminder
  */
 function notFollowingReminder(){
-    return "Remember to start following us if you want more #treats today";
+    return "Remember to start following ".HANDLETOFOLLOW." if you want more #treats today";
 }
 
 
@@ -201,7 +203,7 @@ function website_replies(){
     $helloAgain = greetings_second_time_followers();
     $replies = array(
         1 => array(
-            $g." Thanks for tweeting.",
+            $g." Thanks for tweeting. Those guys have been waiting for ever to get a treat.",
             $g." Thanks for tweeting, have another go!",
             $g." Nice one! Those guys have been waiting for ever to get a treat ;)",
             $g." Those guys have been waiting for ever to get a treat ;)",
