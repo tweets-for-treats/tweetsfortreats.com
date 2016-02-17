@@ -658,10 +658,10 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                             $saveOn = TRUE;
                             
                             /*
-                             * SavePeople should be last in case there's a reminder send,
+                             * SavePeople should be done last in case there's a reminder send,
                              * Sending reminder should stop code from keeping track of number of tweets from user
                              *
-                             * Solution?
+                             * Solution:
                              * set $user_nbr_tweets to +1 of what's in the database at the start
                              * SavePeople at the end (with the $peopleDetails array) if remimder wasn't sent
                              * create a boolean to turn saving on or off
