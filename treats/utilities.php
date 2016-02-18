@@ -131,14 +131,12 @@ if(isset($_POST["hashtag"]) && !empty($_POST["hashtag"])){
 		"duration" => $_POST["duration"],
 		"user_id" => $_POST["user_id"],
                 "time_reset" => mktime($_POST["time_reset"]),
-                "empty" => $emptyMode,
-                "handle_follow" => $_POST["handle_follow"]
+                "empty" => $emptyMode
 	);
 	saveSettings($settings);
 	
 }
 function saveSettings($content){
-       printl($content);
        updateGeneralDB($content);
 }
 /*
