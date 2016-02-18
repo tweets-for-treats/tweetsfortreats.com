@@ -358,10 +358,10 @@ function friendships($person){
 	if($userDetails){
         $userToken = $userDetails[0]['oauth_token'];
 		$userSecretToken = $userDetails[0]['oauth_token_secret'];
-        //$userScreenName = $userDetails[0]['screen_name'];
+        $userScreenName = $userDetails[0]['screen_name'];
         //$userId = $userDetails[0]['user_id'];
         
-        $userScreenName = "reasonsto";
+        //$userScreenName = "reasonsto";
         //$userScreenName = "drum_robot";
         
         //Assume not following by default

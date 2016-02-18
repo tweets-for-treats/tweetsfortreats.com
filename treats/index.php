@@ -100,7 +100,12 @@ $users = get_users();
                             }
                             ?>
                         </select>
+			
                     </span>
+		    <!-- Handle to Follow -->
+		    <input type="text" class="" name="handle_follow" placeholder="Handle to follow" onfocus="this.value = '';" value="<?php echo ($savedSettings[0]['handle_follow']) ? $savedSettings[0]['handle_follow'] : $savedSettings[0]['user_id'] ?>">
+                    
+		    <!-- Empty Mode -->
 		    <span>
 			<?php
 			$emptyChecked = "";
