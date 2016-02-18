@@ -6,8 +6,6 @@
 
 /* Load required lib files. */
 session_start();
-
-$arduino = true;
         
 require_once('twitteroauth/twitteroauth.php');
 require_once('config.php');

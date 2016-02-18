@@ -207,9 +207,9 @@ function apiRequest($query, $token){
 /*   Wrote all by myself :)  */
 /*****************************/
 if(isset($_GET['sendtweet']) && !empty($_GET['sendtweet'])){
-    $message = " Hello Hello";
-    $recipient = "littlepeacebell";
-    sendNoDuplicatedTweets($recipient, $message);
+    $message = " I'm a dum robot";
+    $recipient = "drum_robot";
+    printl(sendNoDuplicatedTweets($recipient, $message));
 }
 /**
  * Send No Duplicated Tweets
@@ -327,7 +327,7 @@ function sendTweet($recipient, $message){
  * Favourite a Tweet
  * id = Tweet ID
  */
-if(isset($_GET['favourite'])) favouriteTweet($_GET['favourite']);
+if(isset($_GET['favorites'])) favouriteTweet($_GET['favorites']);
 function favouriteTweet($tweet_id){
 	$userDetails = get_user_details();
 	
@@ -343,6 +343,8 @@ function favouriteTweet($tweet_id){
         
         if(!isset($content->errors)) return TRUE;
         else return $content->errors;
+        
+        
 
     }
 }
@@ -360,10 +362,7 @@ function friendships($person){
 		$userSecretToken = $userDetails[0]['oauth_token_secret'];
         $userScreenName = $userDetails[0]['screen_name'];
         //$userId = $userDetails[0]['user_id'];
-        
-        //$userScreenName = "reasonsto";
-        //$userScreenName = "drum_robot";
-        
+            
         //Assume not following by default
         $relationship = FALSE;
                 
@@ -454,14 +453,15 @@ function testLib($person){
         
         /* Create a TwitterOauth object with consumer/user tokens. */
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userToken, $userSecretToken);
-        //$content = $connection->get('followers/list', array('screen_name' => $userScreenName));//test
+        $content = $connection->get('followers/list', array('screen_name' => $userScreenName));//test
+        //$content = $connection->get('favorites/list', array('screen_name' => $userScreenName));//test
         //$content = $connection->get('users/show', array('screen_name' => 'abraham'));
         //$content = $connection->get("search/tweets", array("q" => "twitterapi"));
         //printl($connection);
         
         $relationship = FALSE;
         
-        $content = $connection->get('friendships/lookup', array('screen_name' => $userScreenName, $person));
+        //$content = $connection->get('friendships/lookup', array('screen_name' => $userScreenName, $person));
         //$content = $connection->get('friendships/lookup', array('screen_name' => 'IWantTreats, littlepeacebell'));
         //$content = $connection->get('followers/ids', array('screen_name' => $userScreenName));
         printl($content);

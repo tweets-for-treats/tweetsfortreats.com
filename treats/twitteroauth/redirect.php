@@ -4,9 +4,9 @@
 session_start();
 
 //for connect Arduino App to twitter account
-//define('ARDUINO', TRUE);
+define('ARDUINO', TRUE);
 //for connecting Website App to twitter Account
-define('ARDUINO', FALSE);
+//define('ARDUINO', FALSE);
 
 require_once('twitteroauth/twitteroauth.php');
 require_once('config.php');
