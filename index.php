@@ -1,5 +1,5 @@
 <?php
-    require_once('send-mail.php');
+require_once('send-mail.php');
 ?>
 
 <!DOCTYPE html>
@@ -12,7 +12,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="minimal-ui">
     <title>Tweets for Treats</title>
-    <meta name="description" content="Give somebody a free treat if they mention you in a tweet.">
+    <meta name="description" content="Tweets for Treats is a tweet activated vintage treats dispenser. Give somebody a free treat if they mention you in a tweet.">
     <meta name="keywords" content="Black Sun, tweets, Tweets for Treats, internet of things">
     <meta name="author" content="Black Sun">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimal-ui'>
@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="css/treats.css">
     <script src="js/modernizr-2.6.2.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js"></script>
-    
+
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@iwanttreats">
@@ -32,7 +32,7 @@
     <meta name="twitter:title" content="It's a Tweet activated treats dispenser">
     <meta name="twitter:description" content="Tweets for Treats is a treats dispenser that rewards people who tweet about your project. Setup a hashtag and twitter handle then sit back and let people start tweeting.">
     <meta name="twitter:image" content="http://tweetsfortreats.com/img/twitter_card.jpg">
-    
+
 </head>
 <body class="constrained">
 <script>
@@ -53,7 +53,7 @@
 
 <header>
     <div class="header-bg"></div>
-    <img src="img/tweets-for-treats-logo.svg" class="tft-logo">
+    <img src="img/tweets-for-treats-logo.svg" class="tft-logo" alt="Tweets for Treats Logo">
     <ul class="nav-top not-mobile">
         <li class="not-tablet"><a href="#about">About</a></li>
         <li class="not-tablet"><a href="#how-it-works">How it works</a></li>
@@ -74,7 +74,7 @@
                 <span class="title-lg">Treats</span>
             </div>
             <div class="tweet">
-                <img src="img/book-title-header.svg" class="book-title-header">
+                <img src="img/book-title-header.svg" class="book-title-header" alt="Tweets for Treats book title motif">
                 <div class="full-tweet">
                     <span class="tweet-line">Test</span>
                     <span class="tweet-line">123</span>
@@ -87,7 +87,7 @@
                     <span class="tweet-line"></span>
                     <span class="tweet-line"></span>
                 </div>
-                <img src="img/book-title-line.svg" class="book-title-line">
+                <img src="img/book-title-line.svg" class="book-title-line" alt="">
             </div>
             <div class="book-authors">
                 <span class="author">Twitter Handle</span>
@@ -120,11 +120,20 @@
     <div class="text-overlay">
         <div class="not-mobile not-tablet">
             <div class="intro-caption">
-                <h3>Send a Tweet including this</h3>
+                <img src="img/instructions-left.svg" class="instructions-left" alt="Tweets for Treats instructions">
                 <h1>Handle and Hashtag get written here</h1>
                 <h3>Then wait for the countdown</h3>
+                <img src="img/instructions-right.svg" class="instructions-right" alt="Tweets for Treats instructions">
             </div>
         </div>
+    </div>
+    <div class="error-container">
+        <div class="error-text">
+            <h1>Twitter Overload</h1>
+            <h3>Too many requests are being made to Twitter</h3>
+            <h3>Please try again at another time</h3>
+        </div>
+        <div class="error-bg"></div>
     </div>
     <a href="#about" class="scroll off-screen not-mobile">
         <svg version="1.1" class="scroll-arrow" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
@@ -138,7 +147,7 @@
     <div class="thanks"><a href="">A special thanks to...</a></div>
     <div class="row friends">
         <div class="white-top"></div>
-        <img src="img/icon-close.svg" alt="close" class="icon-close">
+        <img src="img/icon-close.svg" alt="close" class="icon-close" alt="close">
         <div class="col-sm-6">
             <div class="friend-block right">
                 <div class="thumb-container">
@@ -149,7 +158,7 @@
                 <h4 class="anim">Maneouvre</h4>
                 <hr class="inverted anim draw">
                 <p class="anim">Thanks to Ollie at Maneouvre for his video expertise on the day of the shoot.</p>
-                <p class="anim">Calm and collected despite some of the limited facilities on the day.</p>
+                <p class="anim">Calm and collected even when things don't quite go to plan.</p>
                 <a href="http://www.manoeuvrecreations.com/" target="_blank" class="btn-outline-inverted anim">Website</a>
             </div>
         </div>
@@ -175,18 +184,18 @@
         <div class="col-md-5 col-sm-6 col-xs-12">
             <div class="text-block right">
 
-                    <h2 class="anim">ABOUT</h2>
-                    <h3 class="anim">It's a Tweet activated treats dispenser</h3>
-                    <hr class="draw anim">
-                    <p class="anim">Tweets for Treats is a vintage treats dispenser that rewards people who tweet about a particular thing.</p>
-                    <p class="anim">What that thing is, well that’s up to you.</p>
-                    <p class="anim">Just place it somewhere and setup a hashtag and twitter handle to look for and then sit back and let people start tweeting.</p>
-                    <a href="#contact" class="btn-outline anim">Hire it now</a>
+                <h2 class="anim">ABOUT</h2>
+                <h3 class="anim">It's a Tweet activated treats dispenser</h3>
+                <hr class="draw anim">
+                <p class="anim">Tweets for Treats is a vintage treats dispenser that rewards people who tweet about a particular thing.</p>
+                <p class="anim">What that thing is, well that’s up to you.</p>
+                <p class="anim">Just place it somewhere and setup a hashtag and twitter handle to look for and then sit back and let people start tweeting.</p>
+                <a href="#contact" class="btn-outline anim">Hire it now</a>
 
             </div>
         </div>
         <div class="col-md-7 col-sm-6 col-xs-12">
-            <img src="img/dispenser-angled-top.jpg" alt="" class="sq-lg img-right">
+            <img src="img/tweets-for-treats.jpg" alt="Tweets for Treats vintage dispenser" class="sq-lg img-right">
         </div>
     </div>
 </section>
@@ -195,7 +204,7 @@
     <a name="how-it-works"></a>
     <div class="row inverted">
         <div class="col-sm-6 col-xs-12">
-            <img src="img/tweets-for-treats-logo-etched.jpg" alt="" class="sq-lg centered">
+            <img src="img/tweets-for-treats-logo-etched.jpg" alt="Tweets for Treats etched into the glass container" class="sq-lg centered">
         </div>
         <div class="col-sm-6 col-xs-12">
             <div class="text-block left">
@@ -204,7 +213,7 @@
                 <h3 class="anim">Easy to setup and even easier to use</h3>
                 <hr class="inverted draw anim">
                 <p class="anim">If you hire the Tweets for Treats dispenser you can use our online configuration tool to set it up to work with any Twitter handle and hashtag.</p>
-                <p class="anim">If you want some treats then just send a tweet including the current handle and hashtag that's displayed on the front label.</p>
+                <p class="anim">If you want some treats then just send a tweet including the current handle and hashtag that are displayed on the front label.</p>
 
             </div>
         </div>
@@ -219,12 +228,12 @@
                     <div class="arrow-down"></div>
                 </div>
                 <div class="how-to-image">
-                    <img src="img/how-to-tweet-from-phone.jpg" alt="" class="img-stretch image-top">
+                    <img src="img/how-to-tweet-from-phone.jpg" alt="Tweet @IWantTreats" class="img-stretch image-top">
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="how-to-image">
-                    <img src="img/how-to-countdown-clock.jpg" alt="" class="img-stretch image-bottom">
+                    <img src="img/how-to-countdown-clock.jpg" alt="Tweets for Treats countdown clock" class="img-stretch image-bottom">
                 </div>
                 <div class="how-to-label bottom">
                     <h3>The Countdown</h3>
@@ -243,12 +252,12 @@
                     <div class="arrow-down"></div>
                 </div>
                 <div class="how-to-image">
-                    <img src="img/how-to-machine.jpg" alt="" class="img-stretch image-top">
+                    <img src="img/how-to-machine.jpg" alt="Tweets for Treats activation lamp" class="img-stretch image-top">
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="how-to-image">
-                    <img src="img/how-to-treats-in-hand.jpg" alt="" class="img-stretch image-bottom">
+                    <img src="img/how-to-treats-in-hand.jpg" alt="Tweets for Treats reward" class="img-stretch image-bottom">
                 </div>
                 <div class="how-to-label bottom">
                     <h3>Insert your Hand</h3>
@@ -261,6 +270,7 @@
     </div>
 </section>
 
+
 <section id="contact">
     <a name="contact"></a>
     <div class="row inverted">
@@ -270,8 +280,8 @@
                 <h2 class="anim">CONTACT</h2>
                 <h3 class="anim">Hire it for your venue</h3>
                 <hr class="inverted draw anim">
-                <p class="anim">Hire the Tweets for Treats dispenser for your venue from as little as £20 per day.</p>
-                <p class="anim">Or alternatively just drop us a line.</p>
+                <p class="anim">It's available for hire for conferences, weddings, parties or any other event where you want to encourage people to tweet.</p>
+                <p class="anim">Contact us to get a quote, we're available for hire throughout the UK.</p>
 
             </div>
         </div>
@@ -302,13 +312,13 @@
             <div class="text-block left">
 
                 <h2 class="anim">WHERE IT IS</h2>
-                <h3 class="anim">Go and see <br>it in action</h3>
+                <h3 class="anim">Go and see <br>it in action at</h3>
                 <hr class="draw anim">
-                <h3 class="date anim">Available Now</h3>
+                <h3 class="date anim"><a href="https://www.facebook.com/TheCoffeeCounter/" target="_blank">The Coffee Counter</a></h3>
                 <p class="address anim">
-                    We're based in Brighton<br>
-                    so if you're local<br>
-                    enquire about hiring it
+                    15 Vine Street<br>
+                    Brighton<br>
+                    BN1 4AG
                 </p>
 
             </div>

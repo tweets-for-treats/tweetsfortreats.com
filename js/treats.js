@@ -18,12 +18,14 @@ if(document.getElementById('map-canvas')){
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             disableDefaultUI: true,
             panControl: true,
+            scaleControl: false,
+            zoomControl: true,
             draggable: false,
             styles: mapStyle
         }
 
         var map = new google.maps.Map(mapCanvas, mapOptions);
-        var latlang = new google.maps.LatLng(50.8237539,-0.1374649);
+        var latlang = new google.maps.LatLng(50.82338880000002,-0.13847344999997419);
         var markerIcon = new google.maps.MarkerImage("img/map-marker.svg", null, null, null, new google.maps.Size(48,75));
 
         var marker = new google.maps.Marker({
@@ -44,6 +46,10 @@ if(document.getElementById('map-canvas')){
 // Youtube Video iFrame API
 // -------------------------------------------------
 
+var instructionsCheck1 = false;
+var instructionsCheck2 = false;
+var instructionsCheck3 = false;
+var instructionsCheck4 = false;
 var tweetCheck = false;
 var tweetFound = false;
 var showBook = false;
@@ -119,6 +125,10 @@ function jumpToCue(c) {
     tweetFound = false;
     showBook = false;
     videoEnd = false;
+    instructionsCheck1 = false;
+    instructionsCheck2 = false;
+    instructionsCheck3 = false;
+    instructionsCheck4 = false;
 
     player.seekTo(c);
 }
@@ -151,10 +161,10 @@ var vis = (function(){
 
 vis(function(){
     if( vis() ) {
-        console.log('tab visible');
+        //console.log('tab visible');
         playVideo();
     } else {
-        console.log('tab hidden')
+        //console.log('tab hidden')
         pauseVideo();
     }
 });
@@ -201,13 +211,19 @@ $(document).ready(function(){
     function createHashtag() {
         var possible = "abcdefghjklmnpqrstuvwxyz123456789";
         var str = "";
-        /*
+
         for( var i=0; i < 3; i++ ) {
-            str += possible.charAt(Math.floor(Math.random() * possible.length));
+            if(i < 2) {
+                var num = Math.floor(Math.random() * possible.length-1) + 1;
+                //console.log(num);
+                str += possible.charAt(num);
+            } else {
+                str += Math.floor(Math.random() * 9) + 1;
+            }
+
         }
-        */
-        var str = Math.floor(Math.random() * 999);
-        return str;
+
+        return str.toUpperCase();
     }
 
     $('.intro-caption').find('h1').html('@IWantTreats #' +hashtag);
@@ -220,16 +236,22 @@ $(document).ready(function(){
     var handles;
     var tempHandles;
     var matchedTweet;
+    var tweetError;
 
     function getTweets(){
+
+
+        //console.log('hashtag : ' + hashtag);
+        //console.log('since_id : ' + localStorage.getItem('since_id'));
 
         totalTweets     = 0;
         handles         = new Array();
         tempHandles     = new Array();
         matchedTweet    = "";
+        tweetError      = "";
 
         $.post("treats/web.php", {
-                results:5,
+                results: 1,
                 hashtag: hashtag,
                 since_id: localStorage.getItem('since_id')
             },
@@ -238,21 +260,47 @@ $(document).ready(function(){
                 if(status == "success") {
 
                     if(data.statuses.length >= 1) {
-                        console.log(data.statuses[0].message);
+
+                        //console.log(data.statuses[0].message);
+                        //console.log(data);
 
                         matchedTweet = data.statuses[0].message;
                         totalTweets = data.nbr_tweets;
                         handles[0] = data.statuses[0].username;
+                        tweetError = data.statuses[0].error.send + "";
+
+                        //console.log(data.statuses[0]);
+                        //console.log('error: '+tweetError);
+
+                        if(tweetError == '429') {
+                            // Too many Twitter API requests error
+                            showTwitterErrorMsg();
+                        }
 
                         writeTweet();
+
                     }
                     setSinceID(data.since_id);
 
                 }else{
-                    console.log("fail");
+                    //console.log("fail");
                 }
 
             }, "json");
+    }
+
+    // Twitter error message
+    // -----------------------------------
+
+    function showTwitterErrorMsg() {
+        hide( $('.intro-caption'), 150 );
+        $('.error-bg').addClass('error-active');
+        show( $('.error-text'), 400 );
+    }
+
+    function hideTwitterErrorMsg() {
+        $('.error-bg').removeClass('error-active');
+        $('.error-text').transition({opacity: 0}, 150);
     }
 
     // Write Tweet to the screen
@@ -386,6 +434,7 @@ $(document).ready(function(){
 
     //}
 
+
     // Layout and Resize handling
     // -----------------------------------
     // Make the video proportionately fit the browser window
@@ -504,29 +553,61 @@ $(document).ready(function(){
             }
             */
 
-            // 19.5s : Check for matching tweets
+            // 1s : Show instructions
+            if( ct >= 0.5 && ct <= 1.7 && !instructionsCheck1) {
+                //console.log(ct + " Instructions check show");
+                instructionsCheck4 = false;
+                instructionsCheck1 = true;
+                showInstructions();
+            }
+
+            // 6.5s : Hide instructions
+            if( ct >= 6 && ct <= 7.2 && !instructionsCheck2) {
+                //console.log(ct + " Instructions check hide");
+                instructionsCheck1 = false;
+                instructionsCheck2 = true;
+                hideInstructions();
+            }
+
+            // 11.5s : Show instructions
+            if( ct >= 11 && ct <= 12.2 && !instructionsCheck3) {
+                //console.log(ct + " Instructions check hide");
+                instructionsCheck2 = false;
+                instructionsCheck3 = true;
+                showInstructions();
+            }
+
+            // 20.5s : Hide instructions
+            if( ct >= 20 && ct <= 21.2 && !instructionsCheck4) {
+                //console.log(ct + " Instructions check hide");
+                instructionsCheck3 = false;
+                instructionsCheck4 = true;
+                hideInstructions();
+            }
+
+            // 21.5s : Check for matching tweets
             if( ct >= 21.3 && ct <= 22 && !tweetCheck) {
-                console.log(ct + " Twitter API check");
+                //console.log(ct + " Twitter API check");
                 tweetCheck = true;
                 getTweets();
             }
 
             // 24.5s : Loop video if no matching tweets found
             if( ct >= 24.5 && ct <= 25.2 && !tweetFound) {
-                console.log(ct + " Loop check");
+                //console.log(ct + " Loop check");
                 if(totalTweets == 0){
                     tweetCheck = false;
                     jumpToCue( 0 );
                 } else {
                     if(!tweetFound){
                         tweetFound = true;
-                        $('.intro-caption').transition({ opacity:0 }, 600, 'out');
+                        hide( $('.intro-caption'), 500 );
                     }
                 }
             }
 
             // 53s : Show book close-up
-            if( ct >= 52.5 && ct <= 53 && !showBook ) {
+            if( ct >= 52.5 && ct <= 53.2 && !showBook ) {
                 showBook = true;
                 $('.text-container').css({ opacity: 1 });
                 $('.text-container').transition({ scale: [1.2, 1.2] }, 1000);
@@ -540,7 +621,17 @@ $(document).ready(function(){
                 hide($('.thanks'), 500);
             }
 
-        }, 200  );
+        }, 100  );
+    }
+
+    function showInstructions() {
+        show($('.instructions-right'),500);
+        show($('.instructions-left'),500);
+    }
+
+    function hideInstructions() {
+        hide($('.instructions-right'),500);
+        hide($('.instructions-left'),500);
     }
 
     $('.play-again').click(function(){
@@ -552,6 +643,7 @@ $(document).ready(function(){
             tweetCheck = false;
         });
         $('.play-again-caption').addClass('fade-right');
+        hideTwitterErrorMsg();
         show($('.thanks'), 500);
         show($('.intro-caption'), 500);
         playbackMonitor();
@@ -590,12 +682,19 @@ $(document).ready(function(){
 
     $(window).on("scroll", function() {
         if($(window).scrollTop() > 50) {
-            $('.header-bg').addClass('header-bg-active');
+            showNavBG();
         } else {
-            //remove the background property so it comes transparent again (defined in your css)
-            $('.header-bg').removeClass('header-bg-active');
+            hideNavBG();
         }
     });
+
+    function showNavBG() {
+        $('.header-bg').addClass('header-bg-active');
+    }
+
+    function hideNavBG() {
+        $('.header-bg').removeClass('header-bg-active');
+    }
 
     // Contact Form
     // -----------------------------------
