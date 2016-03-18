@@ -45,38 +45,25 @@ require_once('send-mail.php');
     ga('send', 'pageview');
 
 </script>
-<!-- Google Code for Tweets for Treats Conversion Page
-In your html page, add the snippet and call
-goog_report_conversion when someone clicks on the
-chosen link or button. -->
+<!-- Google Code for Tweets for Treats Conversion Page -->
 <script type="text/javascript">
     /* <![CDATA[ */
-    goog_snippet_vars = function() {
-        var w = window;
-        w.google_conversion_id = 922394419;
-        w.google_conversion_label = "p8eqCPOp9GQQs77qtwM";
-        w.google_remarketing_only = false;
-    }
-    // DO NOT CHANGE THE CODE BELOW.
-    goog_report_conversion = function(url) {
-        goog_snippet_vars();
-        window.google_conversion_format = "3";
-        var opt = new Object();
-        opt.onload_callback = function() {
-            if (typeof(url) != 'undefined') {
-                window.location = url;
-            }
-        }
-        var conv_handler = window['google_trackConversion'];
-        if (typeof(conv_handler) == 'function') {
-            conv_handler(opt);
-        }
-    }
+    var google_conversion_id = 922394419;
+    var google_conversion_language = "en";
+    var google_conversion_format = "3";
+    var google_conversion_color = "ffffff";
+    var google_conversion_label = "p8eqCPOp9GQQs77qtwM";
+    var google_remarketing_only = false;
     /* ]]> */
 </script>
-<script type="text/javascript"
-        src="//www.googleadservices.com/pagead/conversion_async.js">
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
 </script>
+<noscript>
+    <div style="display:inline;">
+        <img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/922394419/?label=p8eqCPOp9GQQs77qtwM&amp;guid=ON&amp;script=0"/>
+    </div>
+</noscript>
+
 
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -326,7 +313,7 @@ chosen link or button. -->
                     <input type="text" name="location" id="location" placeholder="Your Location">
                     <textarea name="comments" id="comments" placeholder="Your Message"></textarea>
                     <span class="response">This is where the message goes</span>
-                    <a href="" onclick="goog_report_conversion ('http://tweetsfortreats.com?contact')" class="btn-outline-inverted" id="submit-btn">Submit</a>
+                    <a href="" class="btn-outline-inverted" id="submit-btn">Submit</a>
                 </form>
             </div>
         </div>
