@@ -33,6 +33,19 @@ require_once('send-mail.php');
     <meta name="twitter:description" content="Tweets for Treats is a treats dispenser that rewards people who tweet about your project. Setup a hashtag and twitter handle then sit back and let people start tweeting.">
     <meta name="twitter:image" content="http://tweetsfortreats.com/img/twitter_card.jpg">
 
+    <!-- Hotjar Tracking Code for http://tweetsfortreats.com Heatmaps-->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:209613,hjsv:5};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+
 </head>
 <body class="constrained">
 <script>
