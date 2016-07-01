@@ -304,9 +304,8 @@ div.video-overlays {
   height: 40px;
   border-radius: 50%;
   background: #de2f4a;
-  bottom: 0;
   position: absolute;
-  bottom: 20px;
+  bottom: 40px;
   left: 50%;
   margin-left: -20px;
   margin-top: 0;
@@ -620,7 +619,7 @@ div.intro-caption {
 
 .thanks {
   position: absolute;
-  bottom: 20px;
+  bottom: 40px;
   left: 20px; }
 
 .icon-close {
