@@ -1,6 +1,6 @@
 <?php
 
-define('HANDLETOFOLLOW', "@reasonsto");
+define('HANDLETOFOLLOW', "@glug");
 
 /**********************
  *
@@ -16,39 +16,9 @@ define('HANDLETOFOLLOW', "@reasonsto");
 
 function reasonsSpeakers(){
                     $r = array(
-                                        "@Shantell_Martin",
-                                        "Tom Platten-Higgens @TomPH",
-                                        "@MikeBrondbjerg",
-                                        "@Stefanie Posavec @stefpos",
-                                        "@Wouter Verweirder",
-                                        "@TonyHarmer",
-                                        "@AnnieAtkins",
-                                        "James Hall @MrRio",
-                                        "Ben Foxhall @BenjaminBenBen",
-                                        "@Noma_Bar",
-                                        "@DominicWilcox",
-                                        "Andrew Spooner @AndSpo",
-                                        "Stacey Mulcahy @BitchWhoCodes",
-                                        "David Lenaerts @DerSchmale",
-                                        "@Jolyon_Russ",
-                                        "@JeffGreenspan",
-                                        "@RosHorner",
-                                        "@DanHett",
-                                        "John Hicks @HicksDesign",
-                                        "Martin Beeby @TheBeebs",
-                                        "Lin Wi-Yen @yiwen_lin",
-                                        "Jane ni Dhulchaointigh @sugru",
-                                        "Yuki Shimizu @yukoart",
-                                        "@LizzieMcullen",
-                                        "Remy Sharp @rem",
-                                        "@ChrisGannon",
-                                        "@CarlaDiana_",
-                                        "Mike Jones @FlashGen",
-                                        "@MrGarethJames",
-                                        "@DannyYount",
-                                        "Tom Vian @sfbtom",
-                                        "Jop Wielens @MrJop",
-                                        "@EvanRoth_"
+                                        "@Mr_Bingo",
+                                        "@Animadetv",
+                                        "@"
                     );
                     $m = $r[array_rand($r)];
                     return $m;
@@ -132,7 +102,7 @@ function max_replies_arduino(){
  * First time reply (instructions)
  */
 function arduino_first_replies(){
-    /*$g = greetings();
+    $g = greetings();
     $replies = array(
                     $g." Once you see the big light activated on the #treats dispenser just put your hand in the hole to grab your #treats",
                     $g." Once you see the big light activated on the #treats dispenser just put your hand in the hole to get your #treats",
@@ -143,9 +113,7 @@ function arduino_first_replies(){
                     $g." When the big light is on, put your hand in the hole and grab yourself some #treats",
                     $g." We're preparing your #treats. When the big light is on, put your hand in the hole and grab yourself some"
                     );
-    return $replies;*/
-    return arduino_second_replies_following();
-}
+    return $replies;
 
 
 /**

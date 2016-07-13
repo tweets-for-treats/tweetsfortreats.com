@@ -3,7 +3,7 @@
 /* Start session and load library. */
 session_start();
 
-//for connect Arduino App to twitter account
+//for connecting Arduino App to twitter account
 define('ARDUINO', TRUE);
 //for connecting Website App to twitter Account
 //define('ARDUINO', FALSE);

@@ -1,6 +1,6 @@
 <?php
 
-define('HANDLETOFOLLOW', "@TCoffeeCounter");
+define('HANDLETOFOLLOW', "@glug");
 
 /**********************
  *
@@ -10,6 +10,26 @@ define('HANDLETOFOLLOW', "@TCoffeeCounter");
  *
  **********************/
 
+/*
+* Glug Speakers
+*/
+
+function speakers(){
+                    $r = array(
+                                        "@Mr_Bingo",
+                                        "@Animadetv",
+                                        "@rosiecurran",
+                                        "@stickitonrob",
+                                        "@privatepress_",
+                                        "@abowsh",
+                                        "@Stephanie_Unger",
+                                        "@lucysherston",
+                                        "@MarineHello"
+                    );
+                    $m = $r[array_rand($r)];
+                    return $m;
+}
+  
  
 /*
  * random greetings for first time
@@ -65,6 +85,41 @@ function greetings_second_time_followers(){
 }
 
 /*
+ * random insults for Bingo
+ */
+function insults(){
+                    $r = array(
+                                        "you're a fat chinned cunt",
+                                        "you dance like a cunt",
+                                        "you're a fucking mess",
+                                        "you're a fucking idiot",
+                                        "you big arse cunt",
+                                        "you were a fucking ugly baby",
+                                        "you have shit shoes",
+                                        "your face annoys the fuck out of him",
+                                        "you're a small eyed cunt",
+                                        "you are a loser",
+                                        "go fuck yourself",
+                                        "you look like a fucking oompa loompa",
+                                        "you are shitter than a lava lamp",
+                                        "your house is shit",
+                                        "you dress like a cunt",
+                                        "you make mirrors sad",
+                                        "your life is just a series of shit moments",
+                                        "you and your mates are wankers",
+                                        "you're a bag of piss",
+                                        "you're a fat armed cunt",
+                                        "you're a fucking loser",
+                                        "fuck off",
+                                        "your taste in furniture is fucked",
+                                        "your online dating profile picture is dishonest",
+                                        "you are shit at cooking"
+                    );
+                    $m = $r[array_rand($r)];
+                    return $m;
+}
+
+/*
  * random greeting for last reply
  */
 function end_off(){
@@ -93,15 +148,27 @@ function max_replies_arduino(){
  */
 function arduino_first_replies(){
     $g = greetings();
+    $speakers = speakers();
+    $insults = insults();
     $replies = array(
-                    $g." Once you see the big light activated on the #treats dispenser just put your hand in the hole to grab your #treats",
-                    $g." Once you see the big light activated on the #treats dispenser just put your hand in the hole to get your #treats",
-                    $g." Wait for the big light then stick your hand in the hole for your #treats",
-                    $g." Wait for the big light then insert your hand in the hole for your #treats",
-                    $g." When you see the big light switch on stick your hand in the hole for your #treats",
-                    $g." When the big light turns on stick your hand in the hole for your #treats",
-                    $g." When the big light is on, put your hand in the hole and grab yourself some #treats",
-                    $g." We're preparing your #treats. When the big light is on, put your hand in the hole and grab yourself some"
+                    $g." Make sure you leave some for ".$speakers,
+                    $g." Now you've got your treats, go get your mug drawn by @rosiecurran",
+                    $g." Eat those quickly before @Animadetv sees you, they'll poop your party",
+                    $g." Stick that treat on your tongue, don't @stickitonrob",
+                    $g." OK. Stop muchin' and go print somethin' at @privatepress_",
+                    $g." Now go get Curious with @abowsh",
+                    $g." @Stephanie_Unger is getting jealous of all those colours you're eating",
+                    $g." Are you a web developer? Maybe you can help out @lucysherston",
+                    $g." Stop eating free treats and go buy stuff from @MarineHello",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $g." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book"
                     );
     return $replies;
 }
@@ -135,19 +202,30 @@ function arduino_second_replies_not_following(){
  * Second time instructions for Followers
  */
 function arduino_second_replies_following(){
-    $helloAgain = greetings_second_time_followers();
+    //$helloAgain = greetings_second_time_followers();
+    $helloAgain = greetings();
+    
+    $speakers = speakers();
+    
     $replies = array(
-                    $helloAgain." Hey you're a dedicated follower of treats!",
-                    $helloAgain." Fill yer boots!",
-                    $helloAgain." Back for more?",
-                    $helloAgain." You're keen!",
-                    $helloAgain." Remember, treats should form part of a balanced diet",
-                    $helloAgain." Go one, fill yer boots!",
-                    $helloAgain." Sweet :)",
-                    $helloAgain." Those #treats are good, aren't they?",
-                    $helloAgain." You couldn't resist ;)",
-                    $helloAgain." You couldn't resist!",
-                    
+                    $helloAgain." Make sure you leave some for ".$speakers,
+                    $helloAgain." Swallow those treats if you want to get your mug drawn by @rosiecurran",
+                    $helloAgain." #screenprinting with @privatepress_ is healthier then eating these things",
+                    $helloAgain." If you don't like that flavour, just @stickitonrob",
+                    $helloAgain." Don't let @Animadetv poop in your treat mouth party!",
+                    $helloAgain." Stop sniffing around here and go and see @abowsh work",
+                    $helloAgain." After eating all those colours go and see some more with @Stephanie_Unger",
+                    $helloAgain." Chew slowly and go contemplate the illustrations of @lucysherston",
+                    $helloAgain." Still eating free treats!? Seriously, go and buy stuff from @MarineHello",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book",
+                    $helloAgain." @Mr_Bingo says ".$insults.". Go and buy #hatemail the book"
                     );
     return $replies;
 }
