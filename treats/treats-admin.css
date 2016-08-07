@@ -353,6 +353,10 @@ pre {
   Checkboxes to Switches
   ----------------------------------------- */
 
+.switch-holder {
+    color: white;
+    display: block;
+}
 .switch {
     display: block;
     vertical-align: middle;
@@ -381,7 +385,6 @@ pre {
     user-select: none;
     margin-top: 2px;
     white-space: nowrap;
-    padding: 7px 10px;
     width: 44px;
     min-width: 44px;
     height: 28px;

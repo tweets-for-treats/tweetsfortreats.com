@@ -104,7 +104,7 @@ $users = get_users();
                     </span>
                     
 		    <!-- Empty Mode -->
-		    <span>
+		    <span class="switch-holder">
                 <br>
                     <label class="switch">
                         <?php
