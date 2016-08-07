@@ -346,11 +346,11 @@ require_once('send-mail.php');
                 <h2 class="anim">WHERE IT IS</h2>
                 <h3 class="anim">Go and see <br>it in action at</h3>
                 <hr class="draw anim">
-                <h3 class="date anim"><a href="https://www.facebook.com/TheCoffeeCounter/" target="_blank">The Coffee Counter</a></h3>
+                <h3 class="date anim"><a href="https://reasons.to/" target="_blank">Reasons To</a></h3>
                 <p class="address anim">
-                    15 Vine Street<br>
+                    Brighton Dome<br>
                     Brighton<br>
-                    BN1 4AG
+                    BN1 1EE
                 </p>
 
             </div>

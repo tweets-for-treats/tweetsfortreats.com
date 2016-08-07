@@ -25,7 +25,7 @@ if(document.getElementById('map-canvas')){
         }
 
         var map = new google.maps.Map(mapCanvas, mapOptions);
-        var latlang = new google.maps.LatLng(50.82338880000002,-0.13847344999997419);
+        var latlang = new google.maps.LatLng(50.8237118,-0.140145);
         var markerIcon = new google.maps.MarkerImage("img/map-marker.svg", null, null, null, new google.maps.Size(48,75));
 
         var marker = new google.maps.Marker({

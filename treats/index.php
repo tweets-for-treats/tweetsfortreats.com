@@ -105,17 +105,20 @@ $users = get_users();
                     
 		    <!-- Empty Mode -->
 		    <span>
-			<?php
-			$emptyChecked = "";
-			if(emptyMachine() === TRUE) $emptyChecked = "checked";
-			
-			echo '<label>Empty Mode is On</label>';
-			echo '<input type="checkbox" name="empty" '.$emptyChecked.' value="1">';
-			?>
+                <br>
+                    <label class="switch">
+                        <?php
+                            $emptyChecked = "";
+                            if(emptyMachine() === TRUE) $emptyChecked = "checked";
+                            echo '<input type="checkbox" name="empty" '.$emptyChecked.' value="1">'
+                        ?>
+                        <span></span>
+                    </label>
+                    Empty mode
 		    </span>
                     <!-- Save Settings -->
                     <input type="submit" value="Save Settings" class="btn-outline-inverted">
-			<a style="display: block" href="stats.php">View Statistics</a>
+			        <a style="display: block" href="stats.php">View Statistics</a>
                 </form>
 		
             </div>
