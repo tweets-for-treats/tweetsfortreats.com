@@ -688,11 +688,16 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                                     sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
                                 }
                                 if($user_nbr_tweets == 2){
+                                    /*
+                                    //FOLLOWING
                                     //Grab a random reply based on the number of times that person tweeted & if following
                                     if(friends($tweet->user->screen_name)) $reply = $second_replies_following[array_rand($second_replies_following)];
                                     else $reply = $second_replies_not_following[array_rand($second_replies_not_following)];
+                                    */
                                     
+                                    //NO FOLLOWING
                                     //Reply to user
+                                    $reply = $second_replies_following[array_rand($second_replies_following)];
                                     sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
                                     
                                 }
@@ -700,6 +705,12 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                                     //Grab a random reply based on the number of times that person tweeted
                                     $reply = $replies[$user_nbr_tweets][array_rand($replies[$user_nbr_tweets])];
                                     
+                                    //NO FOLLOWING
+                                    //tweet the person
+                                    sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                                    
+                                    /*
+                                    //FOLLOWING
                                     //If person is following
                                     if(friends($tweet->user->screen_name)){
                                         //tweet the person
@@ -717,7 +728,7 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                                         }
                                         //cancel tweet count
                                         $saveOn = FALSE;
-                                    }
+                                    }*/
                                     
                                 }
                                 
