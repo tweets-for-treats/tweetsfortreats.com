@@ -1,6 +1,6 @@
 <?php
 
-define('HANDLETOFOLLOW', "@reasonsto");
+define('HANDLETOFOLLOW', "@weareblacksun");
 
 /**********************
  *
@@ -10,53 +10,7 @@ define('HANDLETOFOLLOW', "@reasonsto");
  *
  **********************/
 
- /*
-  * Hashtag
-  */
  
- function hashtag(){
-            return "#reasonsto";        
- }
-/*
-* Speakers
-*/
-
-function speakers(){
-                    $r = array(
-                                        "@Mr_Bingo",
-                                        "@ebrunborg",
-                                        "@bantjes",
-                                        "@labfoo",
-                                        "@joshuadavis",
-                                        "@evalottchen",
-                                        "@bitchwhocodes",
-                                        "@Jasmine_T",
-                                        "@SebLester",
-                                        "@mrpillustration",
-                                        "@laurajaybee",
-                                        "@C4RL05",
-                                        "@jimtillustrator",
-                                        "@WilfridWood",
-                                        "@femkesvs",
-                                        "@sagmeisterwalsh",
-                                        "@BaldCondensed",
-                                        "@KesselsKramer",
-                                        "@bennewmanillo",
-                                        "@JamFactory",
-                                        "@jessicahische",
-                                        "@quasimondo",
-                                        "@AwayFoundation",
-                                        "@andspo",
-                                        "@thebeebs",
-                                        "@Gegeniale",
-                                        "@NellyBenHayoun",
-                                        "@thatHollywood"
-                    );
-                    $m = $r[array_rand($r)];
-                    return $m;
-}
-  
-
 /*
  * random greetings for first time
  */
@@ -72,7 +26,6 @@ function greetings(){
                     $m = $r[array_rand($r)];
                     return $m;
 }
-
 
 /*
  * random follow us response
@@ -111,8 +64,6 @@ function greetings_second_time_followers(){
                     return $m;
 }
 
-
-
 /*
  * random greeting for last reply
  */
@@ -142,16 +93,15 @@ function max_replies_arduino(){
  */
 function arduino_first_replies(){
     $g = greetings();
-    $thisHashtag = hashtag();
-    $prize = " Reply to us, it could be a free ticket for next year's ".$thisHashtag;
-    $speakers = speakers();
     $replies = array(
-                    $g." Did you get a gold treat? Don't eat it!".$prize,
-                    $g." Got a gold treat? Don't eat it!".$prize,
-                    $g." Got a gold treat?".$prize,
-                    $g." Did you get a gold treat?".$prize,
-                    $g." Got a shiny gold treat?".$prize,
-                    $g." Got some treat bling?".$prize
+                    $g." Once you see the big light activated on the #treats dispenser just put your hand in the hole to grab your #treats",
+                    $g." Once you see the big light activated on the #treats dispenser just put your hand in the hole to get your #treats",
+                    $g." Wait for the big light then stick your hand in the hole for your #treats",
+                    $g." Wait for the big light then insert your hand in the hole for your #treats",
+                    $g." When you see the big light switch on stick your hand in the hole for your #treats",
+                    $g." When the big light turns on stick your hand in the hole for your #treats",
+                    $g." When the big light is on, put your hand in the hole and grab yourself some #treats",
+                    $g." We're preparing your #treats. When the big light is on, put your hand in the hole and grab yourself some"
                     );
     return $replies;
 }
@@ -185,14 +135,19 @@ function arduino_second_replies_not_following(){
  * Second time instructions for Followers
  */
 function arduino_second_replies_following(){
-    //$helloAgain = greetings_second_time_followers();
-    $helloAgain = greetings();
-    
-    $speakers = speakers();
-    $thisHashtag = hashtag();
-    
+    $helloAgain = greetings_second_time_followers();
     $replies = array(
-                    $helloAgain." Make sure you leave some for ".$speakers." ".$thisHashtag
+                    $helloAgain." Hey you're a dedicated follower of treats!",
+                    $helloAgain." Fill yer boots!",
+                    $helloAgain." Back for more?",
+                    $helloAgain." You're keen!",
+                    $helloAgain." Remember, treats should form part of a balanced diet",
+                    $helloAgain." Go one, fill yer boots!",
+                    $helloAgain." Sweet :)",
+                    $helloAgain." Those #treats are good, aren't they?",
+                    $helloAgain." You couldn't resist ;)",
+                    $helloAgain." You couldn't resist!",
+                    
                     );
     return $replies;
 }
@@ -203,25 +158,24 @@ function arduino_second_replies_following(){
  */
 function arduino_replies(){
                     $endOff = end_off();
-                    $thisHashtag = hashtag();
                     $replies = array(
                         3 => array(
-                            "Still feeling lucky punk? ".$thisHashtag,
-                            "It's not real gold, calm down ".$thisHashtag,
-                            "Those tickets are tempting, isn't it? ".$thisHashtag,
-                            "Remember Charlie Bucket got the golden one in the end ".$thisHashtag,
-                            "Did you know one of the golden treat is Scaramanga's fourth nipple? ".$thisHashtag,
-                            "Maybe it's time to stop, I think people are looking at you strange ".$thisHashtag,
-                            "Always beleive in Gold! ".$thisHashtag
+                            "I hope your gym membership hasn't expired because it looks like you'll need it tomorrow",
+                            "Did you skip breakfast today?",
+                            "Do you know these aren't your five-a-day?",
+                            "If you don't ask, you don't get. Is that your moto?",
+                            "I think people are looking at you strange, maybe it's time to stop",
+                            "Maybe it's time to stop, I think people are looking at you strange",
+                            "Hey, this doesn't count as a proper meal you know"
                         ),
                         4 => array(
-                            $endOff." You've reached your daily limit. Come back tomorrow for more free #treats ".$thisHashtag,
-                            $endOff." No more #treats for you. Come back tomorrow for more free #treats ".$thisHashtag,
-                            $endOff." You've reached your daily limit. Come back tomorrow if you want more ".$thisHashtag,
-                            $endOff." You've reached your daily limit. We have to stop you here, come back tomorrow for more ".$thisHashtag,
-                            $endOff." Leave some for the others! You've reached your daily limit. Come back tomorrow ".$thisHashtag,
-                            $endOff." C'mon leave some for the others! You've reached your daily limit. Come back tomorrow ".$thisHashtag,
-                            $endOff." C'mon leave some for the others! You've reached your daily limit ".$thisHashtag
+                            $endOff." You've reached your daily limit. Come back tomorrow for more free #treats",
+                            $endOff." No more #treats for you. Come back tomorrow for more free #treats",
+                            $endOff." You've reached your daily limit. Come back tomorrow if you want more",
+                            $endOff." You've reached your daily limit. We have to stop you here, come back tomorrow for more",
+                            $endOff." Leave some for the others! You've reached your daily limit. Come back tomorrow.",
+                            $endOff." C'mon leave some for the others! You've reached your daily limit. Come back tomorrow.",
+                            $endOff." C'mon leave some for the others! You've reached your daily limit."
                         )
                     );
                     return $replies;
