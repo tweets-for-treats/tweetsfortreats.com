@@ -2,6 +2,5 @@
 
 ### Tweets For Treats ###
 
-* Website and Back-end
-* 1.6
-* Back-end logic is all in the /treat folder
+* Marketing Website
+* Back-end logic for the Twitter API and integration with the machine (arduino) is all in the /treats folder
