@@ -18,12 +18,12 @@ require_once('replies.php');
 /*     KEY ENCODING      */
 /*************************/
 function get_key_encoded(){
-            
+
 	//Encode Consumer & Secret Key
 	$key_encoded = base64_encode(CONSUMER_KEY.":".CONSUMER_SECRET);
 	//$key_encoded = "MEsxU3JhNnQxcVcweFRVSmFVYWJ3OmgzT3FYNlhDTlBUVmk4ZzhJbmI3TFNPZXBGOWJyaU5ldFlHOEk2U1RFcw==";
-         
-	return $key_encoded;   
+
+	return $key_encoded;
 }
 
 /*
@@ -53,15 +53,15 @@ function invalidateToken(){
                         "Authorization: Basic $key_encoded"
           )
         );
-        
+
         $invalidate_context = stream_context_create($invalidate_header_settings);
         // Open the file using the HTTP headers set above
         $invalidate_file = file_get_contents('https://api.twitter.com/oauth2/invalidate_token?access_token='.$bearer_token, false, $invalidate_context);
-        
+
         //Isolate the Bearer Token
         $invalidate_json_response = json_decode($invalidate_file);
         $bearer_token = $invalidate_json_response->access_token;
-        
+
         echo "<h2>Invalidate Token</h2>";
         //printl($bearer_token);
 }
@@ -71,14 +71,14 @@ function invalidateToken(){
 /*****************************/
 if(isset($_GET["gettoken"]) && !empty($_GET["gettoken"])) getToken();
 function getToken($print = true){
-	
+
 	$bearer_token = get_saved_token();
-	
+
 	if(!$bearer_token || $bearer_token === 'neo'){
-		
+
 
 		$key_encoded = get_key_encoded();
-		
+
 		// Header settings
 		$header_settings_curl = array(
 					"Host: api.twitter.com",
@@ -86,23 +86,23 @@ function getToken($print = true){
 					"Authorization: Basic $key_encoded",
 					"Content-Type: application/x-www-form-urlencoded;charset=UTF-8"
 		);
-	    
-            	    
+
+
             // Open the file using the HTTP headers set above
             //$file = file_get_contents('https://api.twitter.com/oauth2/token?grant_type=client_credentials', false, $context);
             $file = get_content_curl_post('https://api.twitter.com/oauth2/token', "grant_type=client_credentials", 1, $header_settings_curl);
-            
-	    
+
+
             if($file){
                 //Isolate the Bearer Token
                 $bearer_token = $file->access_token;
-		
+
 		//saveToFile("token", $bearer_token);
 		saveToken($bearer_token);
             }
-	    
+
 	}
-            
+
             if($print)  echo "<token>".$bearer_token."</token>";
             else return $bearer_token;
 
@@ -110,7 +110,7 @@ function getToken($print = true){
 
 /**
  * CURL make POST request
- * 
+ *
  * $request = String - url
  * $fields = String - the fields (e.g: var=1&var_two=2)
  * $nbr_of_fields = INT - number of fields
@@ -144,13 +144,13 @@ function get_content_curl_post($request, $fields, $nbr_of_fields, $header, $json
 			curl_close($curlInit);
 			return $result;
 		}
-    
+
 	}
 }
 
 /**
  * CURL make GET request
- * 
+ *
  * $request = String - url with fields, like a normal GET request
  * $header = Array - Http header
  */
@@ -169,15 +169,15 @@ function get_content_curl($request, $header){
 		curl_setopt($curlInit, CURLOPT_URL, $request);
 		// Execute
 		$result=curl_exec($curlInit);
-		
+
 		//set to true if wants array instead of objects ($result, true)
 		$json_output = json_decode($result);
-		
+
 		//printl($json_output);
-		
+
 		curl_close($curlInit);
 		return $json_output;
-    
+
 	}
 }
 /*****************************/
@@ -185,16 +185,16 @@ function get_content_curl($request, $header){
 /*****************************/
 function apiRequest($query, $token){
         if($token){
-            // Header Setting 
+            // Header Setting
             $API_header_Settings = array(
 					"Host: api.twitter.com",
 					"User-Agent: Tweets for Treats v1.1",
 					"Authorization: Bearer ".$token
             );
-            
+
             // Open the file using the HTTP headers.
             $API_file = get_content_curl($query, $API_header_Settings);
-            
+
             if($API_file) return $API_file;
             else return false;
         }else{
@@ -219,10 +219,10 @@ if(isset($_GET['sendtweet']) && !empty($_GET['sendtweet'])){
  * If message is a duplicate, add extra exclamation marks
  */
 function sendNoDuplicatedTweets($recipient, $message){
-	
+
     $result = sendTweet($recipient, $message);
     $response = true;
-    
+
     //printl($result);
     if($result->errors[0]->code == 187){
         $message = $message."!";
@@ -232,7 +232,7 @@ function sendNoDuplicatedTweets($recipient, $message){
         //rate limite reached
         $response =  $result->errors[0]->code;
     }
-    
+
     return $response;
 }
 
@@ -242,24 +242,24 @@ function sendNoDuplicatedTweets($recipient, $message){
  * $message = tweet (less than 112 char)
  */
 function sendTweet($recipient, $message){
-	
+
 	$userDetails = get_user_details();
-	
+
 	if($userDetails){
-		
+
 		$userToken = $userDetails[0]['oauth_token'];
 		$userSecretToken = $userDetails[0]['oauth_token_secret'];
-            
+
 		$tweet = '@'.$recipient.' '.$message;
-		
+
 		$oauth_nonce = base64_encode(str_shuffle('qwertyuiop1234567890asdfghjklxzn'));
-		
+
 		date_default_timezone_set('Europe/London');
 		$date = new DateTime();
 		$oauth_timestamp =  $date->getTimestamp();
-			
+
 		$url = "https://api.twitter.com/1.1/statuses/update.json";
-			
+
 		//All Parameters
 		$params = array(
 			"include_entities" => "true",
@@ -278,19 +278,19 @@ function sendTweet($recipient, $message){
 			if($key == "status") $ampersand = '';
 			$encodedString .= rawurlencode($key).'='.rawurlencode($value).$ampersand;
 		}
-		
+
 		//Create Signature base string
 		$oauth_signature_base_string = "POST&".rawurlencode($url)."&".rawurlencode($encodedString);
-		
-		
+
+
 		//Create the Signing key
 		$oauth_signing_key = rawurlencode(CONSUMER_SECRET).'&'.rawurlencode($userSecretToken);
-		
-		
+
+
 		//Create signature
 		$oauth_signature = base64_encode(hash_hmac('sha1', $oauth_signature_base_string, $oauth_signing_key, 'secret'));
-	
-		
+
+
 		//Build Authorization
 		$autho_params = array(
 			"oauth_consumer_key" => CONSUMER_KEY,
@@ -307,8 +307,8 @@ function sendTweet($recipient, $message){
 			if($key == "oauth_version") $endbit = '';
 			$autho_string .= rawurlencode($key).'='.'"'.rawurlencode($value).'"'.$endbit;
 		}
-		
-		
+
+
 		// Header settings
 		$header_settings_curl = array(
 						"Host: api.twitter.com",
@@ -316,7 +316,7 @@ function sendTweet($recipient, $message){
 						'Authorization: '.$autho_string,
 						"Content-Type: application/x-www-form-urlencoded;charset=UTF-8"
 		);
-		
+
 		$file = get_content_curl_post('https://api.twitter.com/1.1/statuses/update.json', "include_entities=true&status=".rawurlencode($params["status"]), 2, $header_settings_curl);
         return $file;
     }
@@ -330,21 +330,21 @@ function sendTweet($recipient, $message){
 if(isset($_GET['favorites'])) favouriteTweet($_GET['favorites']);
 function favouriteTweet($tweet_id){
 	$userDetails = get_user_details();
-	
+
 	if($userDetails){
-    
+
         $userToken = $userDetails[0]['oauth_token'];
 		$userSecretToken = $userDetails[0]['oauth_token_secret'];
-        
+
         /* Create a TwitterOauth object with consumer/user tokens. */
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userToken, $userSecretToken);
         $content = $connection->post('favorites/create', array('id' => $tweet_id));
         //printl($content);
-        
+
         if(!isset($content->errors)) return TRUE;
         else return $content->errors;
-        
-        
+
+
 
     }
 }
@@ -362,19 +362,19 @@ function friendships($person){
 		$userSecretToken = $userDetails[0]['oauth_token_secret'];
         $userScreenName = $userDetails[0]['screen_name'];
         //$userId = $userDetails[0]['user_id'];
-            
+
         //Assume not following by default
         $relationship = FALSE;
-                
+
         /* Create a TwitterOauth object with consumer/user tokens. */
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userToken, $userSecretToken);
         $content = $connection->get('friendships/show', array('source_screen_name' => $userScreenName, 'target_screen_name' => $person ));
 
-        
+
         if(!isset($content->errors)){
             if($content->relationship->target->following == 1) $relationship = TRUE;
         }
-        
+
         return $relationship;
     }
 }
@@ -392,18 +392,18 @@ function friendshipsWithLinkedAccount($person){
 		$userSecretToken = $userDetails[0]['oauth_token_secret'];
         $userScreenName = $userDetails[0]['screen_name'];
         $userId = $userDetails[0]['user_id'];
-        
+
         //Assume not following by default
         $relationship = FALSE;
-                
+
         /* Create a TwitterOauth object with consumer/user tokens. */
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userToken, $userSecretToken);
         $content = $connection->get('friendships/lookup', array('screen_name' => $person ));
-        
+
         if(!isset($content->errors)){
             if($content[0]->connections[0] == "followed_by") $relationship = TRUE;
         }
-        
+
         return $relationship;
     }
 }
@@ -420,7 +420,7 @@ if(isset($_GET['person'])) var_dump( friends($_GET['person']));
 function friends($person, $tableName = 'tweetsfortreats_people'){
     $friend = FALSE;
     $f = selectDataDB(array('following'), 'screen_name', "'".$person."'", $tableName);
-    
+
     //If not marked as following
     if($f[0]['following'] === NULL){
         //Check twitter
@@ -428,13 +428,13 @@ function friends($person, $tableName = 'tweetsfortreats_people'){
         //mark as following if twitter says so
         if($follow){
         //mark as following in db
-        updateGeneralDB(array('following' => 1), 'screen_name', "'".$person."'", $tableName);                       
+        updateGeneralDB(array('following' => 1), 'screen_name', "'".$person."'", $tableName);
         $friend = TRUE;
         }
     }else{
         $friend = TRUE;
     }
-    
+
     return $friend;
 }
 
@@ -450,7 +450,7 @@ function testLib($person){
 		$userSecretToken = $userDetails[0]['oauth_token_secret'];
         $userScreenName = $userDetails[0]['screen_name'];
         $userId = $userDetails[0]['user_id'];
-        
+
         /* Create a TwitterOauth object with consumer/user tokens. */
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userToken, $userSecretToken);
         $content = $connection->get('followers/list', array('screen_name' => $userScreenName));//test
@@ -458,16 +458,16 @@ function testLib($person){
         //$content = $connection->get('users/show', array('screen_name' => 'abraham'));
         //$content = $connection->get("search/tweets", array("q" => "twitterapi"));
         //printl($connection);
-        
+
         $relationship = FALSE;
-        
+
         //$content = $connection->get('friendships/lookup', array('screen_name' => $userScreenName, $person));
         //$content = $connection->get('friendships/lookup', array('screen_name' => 'IWantTreats, littlepeacebell'));
         //$content = $connection->get('followers/ids', array('screen_name' => $userScreenName));
         printl($content);
         //printl($connection->get('account/verify_credentials'));
-        
-        
+
+
     }
 }
 
@@ -480,20 +480,20 @@ function testLib($person){
  */
 function directMessage($person){
 	$userDetails = get_user_details();
-	
+
 	if($userDetails){
-    
+
         $userToken = $userDetails[0]['oauth_token'];
 		$userSecretToken = $userDetails[0]['oauth_token_secret'];
-        
+
         /* Create a TwitterOauth object with consumer/user tokens. */
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userToken, $userSecretToken);
         //$content = $connection->get('account/verify_credentials');//test
-        
+
         $relationship = FALSE;
-        
+
         //$content = $connection->post('direct_messages/new', array('screen_name' => $person, 'text' => $message));
-        
+
     }
 }
 
@@ -504,15 +504,15 @@ function directMessage($person){
 if(isset($_GET['auth']) && !empty($_GET['auth'])) authorizeApp();
 
 function authorizeApp(){
-	
+
 	$oauth_nonce = base64_encode(str_shuffle('qwertyuiop1234567890asdfghjklxzn'));
-	
+
 	$date = new DateTime();
 	$oauth_timestamp =  $date->getTimestamp();
-		
+
 	$url = "https://api.twitter.com/oauth/request_token";
 
-	
+
 	//All Parameters
 	$params = array(
 		"oauth_callback" => OAUTH_CALLBACK,
@@ -529,22 +529,22 @@ function authorizeApp(){
 		if($key == "oauth_version") $ampersand = '';
 		$encodedString .= rawurlencode($key).'='.rawurlencode($value).$ampersand;
 	}
-	
+
 	//Create Signature base string
 	$oauth_signature_base_string = "POST&".rawurlencode($url)."&".rawurlencode($encodedString);
-	
+
 	//printl($oauth_signature_base_string);
-	
+
 	//Create the Signing key
 	$oauth_signing_key = rawurlencode(CONSUMER_SECRET);
-	
-	
+
+
 	//Create signature
 	$oauth_signature = base64_encode(hash_hmac('sha1', $oauth_signature_base_string, $oauth_signing_key, 'secret'));
 	//$oauth_signature = base64_encode(hash_hmac('sha1', $oauth_signature_base_string, $oauth_signing_key, TRUE));
-	
+
 	//printl(rawurlencode($oauth_signature));
-	
+
 	//Build Authorization for Header
 	$autho_params = array(
 		"oauth_consumer_key" => CONSUMER_KEY,
@@ -560,9 +560,9 @@ function authorizeApp(){
 		if($key == "oauth_version") $endbit = '';
 		$autho_string .= rawurlencode($key).'='.'"'.rawurlencode($value).'"'.$endbit;
 	}
-	
+
 	//printl($autho_string);
-	
+
 	// Header settings
 	$header_settings_curl = array(
 					"Host: api.twitter.com",
@@ -572,7 +572,7 @@ function authorizeApp(){
 	);
 
 	$file = get_content_curl_post('https://api.twitter.com/oauth/request_token', "oauth_callback=".rawurlencode(OAUTH_CALLBACK), 1, $header_settings_curl, FALSE);
-	
+
 	//var_dump($file);
 }
 
@@ -585,78 +585,78 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
 
     //$since_id = NULL;
     if($since_id == NULL) $since_id = 0;
-	    
+
 	//Set Search using the saved settings
 	$savedSettings = get_settings("settings");
 	if($hastag == NULL) $q = '%23'.$savedSettings[0]['hashtag'];
 	else $q = '%23'.$hastag;
-	
+
 	$token = getToken(false);
-	
-    
+
+
     //printl($user_name);
-    
-    
+
+
     //Search Hashtag and Handle
     $user_name = "IWantTreats"; //for website query
     if(ARDUINO){
         $user_details = get_user_details();
         $user_name = $user_details[0]["screen_name"];
     }
-    
+
     $query = "https://api.twitter.com/1.1/search/tweets.json?q=%40$user_name%20$q&result_type=$result_type&count=$count&since_id=$since_id";
-	
-    
+
+
     //Search just a Hashtag
 	//$query = "https://api.twitter.com/1.1/search/tweets.json?q=$q&result_type=$result_type&count=$count&since_id=$since_id";
-	
-    
+
+
 	$response = apiRequest($query, $token);
-    
+
 	if($response){
-	
+
 		//echo "<hashtag>".$savedSettings['hashtag']."</hashtag>";
 		$nbrTweets = count($response->statuses);
 		//Use since_id_str if there's no tweets
 		$since_id = ($nbrTweets > 0) ? $response->search_metadata->max_id_str : $response->search_metadata->since_id_str;
-		
+
         //printl($response);
-        
+
 		//ARDUINO
 		if(ARDUINO){
-			
+
             //Grab all replies
             $first_replies = arduino_first_replies();
             $second_replies_not_following = arduino_second_replies_not_following();
             $second_replies_following = arduino_second_replies_following();
             $replies = arduino_replies();
             $max_replies = max_replies_arduino();
-            
-            if($nbrTweets > 0){  
-                
+
+            if($nbrTweets > 0){
+
                 //Add people into an array to only send one tweet per person
                 $peopleAlreadyRepliedToo = array();
                 //Credits for the machine, 1 tweet = 1 credit
                 $credits_for_machine = 0;
-                
+
                 //printl($response);
-                
+
                 //Reply to users & favourite their tweet.
 				foreach($response->statuses as $tweet){
-                    
+
                     //Ignore Retweets!
                     $retweet = false;
                     if(isset($tweet->retweeted_status)) $retweet = true;
-                    
+
                     //If this not a retweet
                     if(!$retweet){
-                
-                    
+
+
                         //Check if that person already got a reply (in case there's multiple tweets from the same person)
                         if(!in_array($tweet->user->id, $peopleAlreadyRepliedToo)){
-                            
+
                             $saveOn = TRUE;
-                            
+
                             /*
                              * SavePeople should be done last in case there's a reminder send,
                              * Sending reminder should stop code from keeping track of number of tweets from user
@@ -666,21 +666,21 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                              * SavePeople at the end (with the $peopleDetails array) if remimder wasn't sent
                              * create a boolean to turn saving on or off
                              */
-                            
-                            
-                        
+
+
+
                             //Check how many times that person tweeted
                             $user_nbr_tweets_array = selectDataDB(array('nbr_tweets'), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
                             //Add one to the tweet count to include this tweet
                             $user_nbr_tweets = $user_nbr_tweets_array[0]['nbr_tweets'] + 1;
-                            
-                            
+
+
                             //Only bother if the person tweeted less the maximum allowed
                             if($user_nbr_tweets <= $max_replies){
-                                
+
                                 //Always favourite tweets
                                 favouriteTweet($tweet->id);
-                                
+
                                 if($user_nbr_tweets == 1){
                                     //Grab a random reply based on the number of times that person tweeted
                                     $reply = $first_replies[array_rand($first_replies)];
@@ -694,28 +694,28 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                                     if(friends($tweet->user->screen_name)) $reply = $second_replies_following[array_rand($second_replies_following)];
                                     else $reply = $second_replies_not_following[array_rand($second_replies_not_following)];
                                     */
-                                    
+
                                     //NO FOLLOWING
                                     //Reply to user
                                     $reply = $second_replies_following[array_rand($second_replies_following)];
                                     sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
-                                    
+
                                 }
                                 if($user_nbr_tweets >= 3 && $user_nbr_tweets <= $max_replies){
                                     //Grab a random reply based on the number of times that person tweeted
                                     $reply = $replies[$user_nbr_tweets][array_rand($replies[$user_nbr_tweets])];
-                                    
+
                                     //NO FOLLOWING
                                     //tweet the person
                                     sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
-                                    
+
                                     /*
                                     //FOLLOWING
                                     //If person is following
                                     if(friends($tweet->user->screen_name)){
                                         //tweet the person
                                         sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
-                                    //Person isn't following  
+                                    //Person isn't following
                                     }else{
                                         //check if they've been reminded about it
                                         $reminded = selectDataDB(array('reminder'), 'user_id', $tweet->user->id, 'tweetsfortreats_people');
@@ -729,13 +729,13 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                                         //cancel tweet count
                                         $saveOn = FALSE;
                                     }*/
-                                    
+
                                 }
-                                
-                                
+
+
                                 //If everything went well, save the tweet
                                 if($saveOn){
-                                    
+
                                     //Store peoples's handle & id in database for replies
                                     $peopleDetails = array(
                                         "user_id" => $tweet->user->id,
@@ -744,15 +744,15 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                                         "nbr_tweets_alltime" => 1,
                                         "created_at" => strtotime($tweet->created_at)
                                     );
-                                    
+
                                     //If people already exist, the above array will be ignored
                                     savePeople($peopleDetails, 'tweetsfortreats_people');
-                                    
-                                    //Store person in array so we don't reply to him again (in case there's multiple tweets from the same person) 
+
+                                    //Store person in array so we don't reply to him again (in case there's multiple tweets from the same person)
                                     $peopleAlreadyRepliedToo[] .= $tweet->user->id;
                                     //Keep count of number of tweets, except the one that exceded the max number of replies
                                     if($user_nbr_tweets<=$max_replies) $credits_for_machine += 1;
-                                    
+
                                 }
                             }
                         }
@@ -762,14 +762,14 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
             echo "<mode>A</mode>";
             echo "<nbr_tweets>".$credits_for_machine."</nbr_tweets>";
 			echo "<max_id_str>".$since_id."</max_id_str>";
-            
+
 		}
 		//WEBSITE
 		else{
-			
+
             $replies = website_replies();
             $statuses_data = array();
-            
+
 			if($nbrTweets > 0){
 				$i = 0;
 				//Add people into an array to only send one tweet per person
@@ -777,7 +777,7 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                 foreach($response->statuses as $tweet){
 				    //Check if that person already got a reply (in case there's multiple tweets from the same person)
                     if(!in_array($tweet->user->id, $peopleAlreadyRepliedToo)){
-                        
+
                         //Store peoples's handle & id in database for replies
                         $peopleDetails = array(
                             "user_id" => $tweet->user->id,
@@ -788,24 +788,24 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                         );
                         //If people already exist, the above array will be ignored
                         savePeople($peopleDetails, 'tweetsfortreats_people_website');
-                        
+
                         //Check how many times that person tweeted
                         $user_nbr_tweets_array = selectDataDB(array('nbr_tweets'), 'user_id', $tweet->user->id, 'tweetsfortreats_people_website');
                         $user_nbr_tweets = $user_nbr_tweets_array[0]['nbr_tweets'];
-                        
+
                         //If user replies is superior of the number of replies, cap the value
                         if($user_nbr_tweets >= count($replies)) $user_nbr_tweets = count($replies);
-                
+
                         //Grab a random reply based on the number of times that person tweeted
                         $reply = $replies[$user_nbr_tweets][array_rand($replies[$user_nbr_tweets])];
                         //$reply = str_shuffle('qwertyuiop1234567890asdfghjklxzn');
-                       
+
                         //Favourite only the first tweet by the user
                         if($user_nbr_tweets == 1) $errorFav = favouriteTweet($tweet->id);
-                            
+
                         //Reply to user
                         $errorSend = sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
-                        
+
                         //Do stuff
                         $statuses_data[$i]["tweet_id"] = $tweet->id;
                         $statuses_data[$i]["message"] = $tweet->text;
@@ -826,9 +826,9 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
 			);
 			return $return_data;
 		}
-		
+
         }
-        
+
 }
 
 
@@ -837,13 +837,13 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
  *
  **/
 function arduino_get_queries(){
-    
+
     if(isset($_GET["treats"]) && !empty($_GET["treats"])){
         //Empty Mode
         if(emptyMachine() === TRUE){
             echo "<mode>B</mode>";
         }else{
-            
+
             //API REQUEST
             if(isset($_GET["result_type"])){
                 //searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"], urlencode($_GET["token"]));
@@ -857,7 +857,7 @@ function arduino_get_queries(){
             //Exit php as we don't want to send back teh rest the page
             exit;
             }*/
-            
+
         }
     }
 }

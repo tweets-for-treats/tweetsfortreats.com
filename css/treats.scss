@@ -379,8 +379,9 @@ div.video-overlays {
   height: 40px;
   border-radius: 50%;
   background: $color-main;
+  bottom: 0;
   position: absolute;
-  bottom: 40px;
+  bottom: 20px;
   left: 50%;
   margin-left: -20px;
   margin-top: 0;
@@ -739,7 +740,7 @@ div.intro-caption {
 
 .thanks {
   position: absolute;
-  bottom: 40px;
+  bottom: 20px;
   left: 20px;
 }
 
@@ -1185,3 +1186,5 @@ div.loading-cover {
     margin: 0 auto 30px auto;
   }
 }
+
+
