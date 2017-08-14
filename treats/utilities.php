@@ -19,7 +19,7 @@ function checkMemberLogin(){
 
 function redirectCheckMemberLogin(){
  if(!checkMemberLogin()) go_to_login();
- 
+
 }
 
 /********************* REDIRECTS ************************/
@@ -37,7 +37,7 @@ function connectToDatabase($tbl_name){
  $sqlUser ="db179275";
  $sqlPassword ="?unfamous!123";
  $db_name ="db179275_tweetsfortreats";
- 
+
  $mysqli = new mysqli(HOST, "$sqlUser", "$sqlPassword", "$db_name");
  if ($mysqli->connect_errno) {
      echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
@@ -49,12 +49,12 @@ function connectToDatabase($tbl_name){
 
 /*********************  ANTI HACKERS ********************/
 function agentSmith($mysqli, $rawContent, $order = 'main'){
-    
+
     //Check for Login
     if($order === 'main'){
         //Check For Legal Caracters
-        //$charAccepted = "/^[A-Za-z0-9 \_\%\£\$\@\-]{1,1000}$/";
-        $charAccepted = "/^[A-Za-z0-9 \_\%\£\$\@\-\+]{1,1000}$/";
+        //$charAccepted = "/^[A-Za-z0-9 \_\%\ï¿½\$\@\-]{1,1000}$/";
+        $charAccepted = "/^[A-Za-z0-9 \_\%\ï¿½\$\@\-\+]{1,1000}$/";
         if(is_array($rawContent)){
          foreach($rawContent as $key => $value){
              //If it macth then populate the cleaned Array with the Raw Array Values
@@ -75,7 +75,7 @@ function agentSmith($mysqli, $rawContent, $order = 'main'){
          }
         }
     }
-    
+
     //If you Passed The Regular expression test, Check against MSQL Injections
     //Check if magic quotes is on ( if on it will add extra slash infront of a slash). Now off on most servers
     $magicQuotes = get_magic_quotes_gpc();
@@ -97,7 +97,7 @@ function realEscapeStringRecursive($mysqli, $magicQuotes, $content){
 
       if(is_array($content)){
        foreach($content as $key => $value){
-          if(is_array($value)) realEscapeStringArrayRecursive($mysqli, $magicQuotes, $value); 
+          if(is_array($value)) realEscapeStringArrayRecursive($mysqli, $magicQuotes, $value);
           else {
            //If get magic is on , clean the extra slash
            if ($magicQuotes) $content[$key] = stripslashes($value);
@@ -109,7 +109,7 @@ function realEscapeStringRecursive($mysqli, $magicQuotes, $content){
          if ($magicQuotes) $content = stripslashes($content);
          $content = $mysqli->real_escape_string($content);
       }
-       
+
        return $content;
 }
 /*
@@ -117,7 +117,7 @@ function realEscapeStringRecursive($mysqli, $magicQuotes, $content){
  */
 function saveToken($content){
         $contentArray = array('token' => $content);
-	updateGeneralDB($contentArray);
+	       updateGeneralDB($contentArray);
 }
 /*
  * Save Settings to DB
@@ -127,14 +127,14 @@ if(isset($_POST["hashtag"]) && !empty($_POST["hashtag"])){
         $emptyMode = ($_POST["empty"] == 1 ? 1 : 0);
 	//Put in array and Remove all white spaces
 	$settings = array(
-		"hashtag" => preg_replace('/\s+/', '', $_POST["hashtag"]), 
+		"hashtag" => preg_replace('/\s+/', '', $_POST["hashtag"]),
 		"duration" => $_POST["duration"],
 		"user_id" => $_POST["user_id"],
                 "time_reset" => mktime($_POST["time_reset"]),
                 "empty" => $emptyMode
 	);
 	saveSettings($settings);
-	
+
 }
 function saveSettings($content){
        updateGeneralDB($content);
@@ -149,7 +149,7 @@ function updateGeneralDB($content, $where = 'id', $needle = 1, $tableName = 'twe
 		$cleanContent = agentSmith($mysqli, $content);
 		//Build SET as a String for the QUERY
                 $i=0;
-                foreach($cleanContent as $key=>$val){ 
+                foreach($cleanContent as $key=>$val){
                       if($i == 0) $c = $key." = '".$val."'";
                       else $c .= ', '.$key." = '".$val."'";
                       $i++;
@@ -175,7 +175,7 @@ function updateGeneralDB($content, $where = 'id', $needle = 1, $tableName = 'twe
  * $content: An array that will be transformed into a string for UPDATE mysql
  */
 function saveUsers($content){
- 
+
         if(check_exist('user_id', $content["user_id"], 'tweetsfortreats_users')){
                 updateGeneralDB($content, 'user_id', $content["user_id"], 'tweetsfortreats_users');
         }
@@ -241,6 +241,15 @@ function savePeople($content, $tableName, $max = 500){
         }
         else addToDB("user_id, screen_name, nbr_tweets, nbr_tweets_alltime, created_at", $content, $tableName);
 }
+
+/*
+ * Save Latest Query timestamp
+ * $content: An array that will be transformed into a string for UPDATE mysql
+ * $content: array('latest_query_timestamp' => time())
+ */
+function saveCurrentTimeStamp($content){
+  updateGeneralDB($content);
+}
 /*
  * Add to DB
  */
@@ -251,7 +260,7 @@ function addToDB($field, $content, $tableName, $exit = false){
                 //Build VALUES as a String for the QUERY
                 $c = '(\'';
                 $i=0;
-                foreach($cleanContent as $key=>$val){ 
+                foreach($cleanContent as $key=>$val){
                       if($i == 0) $c .= $val;
                       else $c .= '\', \''.$val;
                       $i++;
@@ -259,7 +268,7 @@ function addToDB($field, $content, $tableName, $exit = false){
                 $c .= '\')';
                 //Write infos to the database
 		$sql= "INSERT INTO $tableName ($field) VALUES ".$c;
-                
+
 		//The query failed, reload page and ask the user to try again
 		$result = $mysqli->query($sql);
 		if(!$result){
@@ -314,6 +323,12 @@ function get_settings(){
 function get_users(){
         return get_data_from_DB('tweetsfortreats_users', TRUE);
 }
+/*
+ * Get Latest Query Call Time stamp
+ */
+function get_latest_timestamp(){
+        return get_data_from_DB('tweetsfortreats_general', FALSE, 'latest_query_timestamp');
+}
 function get_data_from_DB($tableName, $all = false, $field = 'id'){
         $mysqli = connectToDatabase($tableName);
 	if(is_object($mysqli)){
@@ -333,7 +348,7 @@ function get_data_from_DB($tableName, $all = false, $field = 'id'){
                         }
                         else {
                                 $responseArray = $result->fetch_row();
-                          
+
                                 $result->close();
                                 $response = $responseArray[0];
                         }
@@ -354,13 +369,13 @@ function selectDataDB($fieldToFetch, $where = 'id', $needle = 1, $tableName = 't
 		$cleanContent = agentSmith($mysqli, $fieldToFetch);
 		//Build SET as a String for the QUERY
                 $i=0;
-                foreach($cleanContent as $val){ 
+                foreach($cleanContent as $val){
                       if($i == 0) $c = $val;
                       else $c .= ', '.$val;
                       $i++;
                 }
                 $sql="SELECT $c FROM $tableName WHERE $where = $needle";
-                
+
                 //The query failed, reload page and ask the user to try again
 		$result = $mysqli->query($sql);
 		if(!$result){
@@ -372,7 +387,7 @@ function selectDataDB($fieldToFetch, $where = 'id', $needle = 1, $tableName = 't
                         //didn't need loop but MT doesn't support!
                         //$responseArray = $result->fetch_all(MYSQLI_ASSOC);
                         //So let's loop instead :(
-                        
+
                         //Associative Array
                         while($responseValue = $result->fetch_array(MYSQLI_ASSOC)){
                         //Indexed Array
@@ -468,4 +483,4 @@ function xssProtect($var){
 /*********************** DEBUG ********************************/
 function printl($v){
 		printf("<pre>%s</pre>", print_r($v, true));
-	}		
+	}

@@ -133,6 +133,8 @@ function get_content_curl_post($request, $fields, $nbr_of_fields, $header, $json
 		curl_setopt($curlInit, CURLOPT_RETURNTRANSFER, true);
 		// Set the url
 		curl_setopt($curlInit, CURLOPT_URL, $request);
+    //Retreive the Repsonse headers
+    curl_setopt($curlInit, CURLOPT_HEADERFUNCTION, "HandleHeaderLine");
 		// Execute
 		$result = curl_exec($curlInit);
 		if($json){
@@ -147,14 +149,7 @@ function get_content_curl_post($request, $fields, $nbr_of_fields, $header, $json
 
 	}
 }
-$openForQuering = True;
-$lastcallTime;
-function rateLimit($remainCall, $reset){
-  //Mins left until Reset
-  $minsRemain = date_diff(date_create_from_format('U', $reset), date_create_from_format('U', time()));
-  //Remaining calls per minutes
-  $remainCallMins = $remainCall/($minsRemain->i);
-}
+
 
 /**
 * CURL Header Handler to check rate limit.
@@ -215,6 +210,60 @@ function get_content_curl($request, $header){
 
 	}
 }
+
+/**
+* Set Remaining Calls per minutes
+*
+* $remainCall = (int) number of remaining calls found in Header response
+* $reset = (String) unixtimestamp for when the limit will be rateReset
+* $callRateSeconds = (float) "Make 1 call every xx seconds" ($callRateSeconds = xx)
+*/
+$callRateSeconds;
+function rateLimit($remainCalls, $reset){
+  global $callRateSeconds;
+  //Mins left until Reset
+  $minsRemain = date_diff(date_create_from_format('U', $reset), date_create_from_format('U', time()));
+  //Call rate as in "Make 1 call every xx seconds"
+  $callRateSeconds = ($minsRemain->i*60)/$remainCalls;
+	//CallRateSeconds needs to be stored in DB here instead
+}
+
+/**
+* Gate to allow quering or not
+*
+* return TRUE or FALSE
+*/
+function openForQuering(){
+  global $callRateSeconds;
+	//Always assume it's good to go
+  $o = TRUE;
+  //Check if this is the first call
+	$latestCallTime = get_latest_timestamp();
+	//Check if you can make a call
+	$diff = date_diff(date_create_from_format('U', $latestCallTime), date_create_from_format('U', time()));
+	//Only bother if the difference is in hours/mins/seconds
+	if ($diff->y == 0 && $diff->m == 0 && $diff->d == 0){
+		//Calculate the difference in seconds
+		$diffInSecs = ($diff->h*3600)+($diff->i*60)+($diff->s);
+		// if it's more that the callRateSeconds(Make 1 call every xx seconds) than set to False
+
+		if($diffInSecs < //CallRateSeconds needs to be called from DB here) {
+			$o = FALSE;
+		}else{
+			//If it's bigger then keep it TRUE and Save Timestamp for next time
+			saveCurrentTimeStamp(array('latest_query_timestamp' => time()));
+		}
+	}else{
+		//If it's bigger than hours then keep it TRUE and Save Timestamp for next time
+		saveCurrentTimeStamp(array('latest_query_timestamp' => time()));
+	}
+	var_dump($o);
+	printl($callRateSeconds);
+	printl($diff);
+  return $o;
+}
+
+
 /*****************************/
 /*     Make API Request      */
 /*****************************/
@@ -884,7 +933,7 @@ function arduino_get_queries(){
             //API REQUEST
             if(isset($_GET["result_type"])){
                 //searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"], urlencode($_GET["token"]));
-                searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"]);
+                if(openForQuering() === TRUE ) searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"]);
                 //Exit php as we don't want to send back the rest the page
                 exit;
             }
@@ -920,11 +969,13 @@ function website_post_queries(){
 	if(isset($_POST["results"]) && !empty($_POST["results"])){
 		$hashtag = NULL;
 		if(isset($_POST["hashtag"]) && !empty($_POST["hashtag"])) $hashtag = $_POST["hashtag"];
-		$response = searchTwitter("recent", $_POST["results"], $_POST["since_id"], $hashtag);
-		if($response) {
-			//Header('Content-type: text/javascript; charset=UTF-8');
-			echo json_encode($response);
-		}
+		if(openForQuering() === TRUE ) {
+      $response = searchTwitter("recent", $_POST["results"], $_POST["since_id"], $hashtag);
+  		if($response) {
+  			//Header('Content-type: text/javascript; charset=UTF-8');
+  			echo json_encode($response);
+  		}
+    }
 		//Exit php as we don't want to send back the rest the page
 		exit;
 	}
@@ -936,11 +987,13 @@ function website_get_queries(){
 	if(isset($_GET["results"]) && !empty($_GET["results"])){
 		$hashtag = NULL;
 		if(isset($_GET["hashtag"]) && !empty($_GET["hashtag"])) $hashtag = $_GET["hashtag"];
-		$response = searchTwitter("recent", $_GET["results"], $_GET["since_id"], $hashtag);
-		if($response) {
-			//Header('Content-type: text/javascript; charset=UTF-8');
-			echo json_encode($response);
-		}
+		if(openForQuering() === TRUE ) {
+      $response = searchTwitter("recent", $_GET["results"], $_GET["since_id"], $hashtag);
+  		if($response) {
+  			//Header('Content-type: text/javascript; charset=UTF-8');
+  			echo json_encode($response);
+  		}
+    }
 		//Exit php as we don't want to send back the rest the page
 		exit;
 	}
