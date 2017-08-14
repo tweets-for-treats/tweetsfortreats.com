@@ -147,12 +147,37 @@ function get_content_curl_post($request, $fields, $nbr_of_fields, $header, $json
 
 	}
 }
+$openForQuering = True;
+$lastcallTime;
+function rateLimit($remainCall, $reset){
+  //Mins left until Reset
+  $minsRemain = date_diff(date_create_from_format('U', $reset), date_create_from_format('U', time()));
+  //Remaining calls per minutes
+  $remainCallMins = $remainCall/($minsRemain->i);
+}
 
 /**
 * CURL Header Handler to check rate limit.
+* x-rate-limit-remaining: 446
+* x-rate-limit-reset: 1502655973
 */
+$grabRate = TRUE;
+$rateRemain = FALSE;
+$rateReset = FALSE;
 function HandleHeaderLine( $curl, $header_line ) {
-    echo "<br>".$header_line; // or do whatever
+    global $rateRemain, $rateReset, $grabRate;
+    $rateRemainHeader = strpos($header_line, 'x-rate-limit-remaining');
+    $rateResetHeader = strpos($header_line, 'x-rate-limit-reset');
+    if($rateRemainHeader !== FALSE){
+      $rateRemain = trim(explode(": ", $header_line)[1]);
+    }
+    if($rateResetHeader !== FALSE){
+      $rateReset = trim(explode(": ", $header_line)[1]);
+    }
+    if($rateRemain != FALSE && $rateReset != FALSE && $grabRate) {
+      rateLimit($rateRemain, $rateReset);
+      $grabRate = FALSE;
+    }
     return strlen($header_line);
 }
 
@@ -622,7 +647,7 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
 
 
 	$response = apiRequest($query, $token);
-  
+
 	if($response){
 
 		//echo "<hashtag>".$savedSettings['hashtag']."</hashtag>";
