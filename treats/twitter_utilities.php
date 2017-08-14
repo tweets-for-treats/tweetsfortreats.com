@@ -149,6 +149,14 @@ function get_content_curl_post($request, $fields, $nbr_of_fields, $header, $json
 }
 
 /**
+* CURL Header Handler to check rate limit.
+*/
+function HandleHeaderLine( $curl, $header_line ) {
+    echo "<br>".$header_line; // or do whatever
+    return strlen($header_line);
+}
+
+/**
  * CURL make GET request
  *
  * $request = String - url with fields, like a normal GET request
@@ -167,6 +175,8 @@ function get_content_curl($request, $header){
 		curl_setopt($curlInit, CURLOPT_RETURNTRANSFER, true);
 		// Set the url
 		curl_setopt($curlInit, CURLOPT_URL, $request);
+    //Retreive the Repsonse headers
+    curl_setopt($curlInit, CURLOPT_HEADERFUNCTION, "HandleHeaderLine");
 		// Execute
 		$result=curl_exec($curlInit);
 
@@ -612,7 +622,7 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
 
 
 	$response = apiRequest($query, $token);
-
+  
 	if($response){
 
 		//echo "<hashtag>".$savedSettings['hashtag']."</hashtag>";
@@ -620,7 +630,8 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
 		//Use since_id_str if there's no tweets
 		$since_id = ($nbrTweets > 0) ? $response->search_metadata->max_id_str : $response->search_metadata->since_id_str;
 
-        //printl($response);
+    //printl($since_id);
+    //printl($nbrTweets);
 
 		//ARDUINO
 		if(ARDUINO){
@@ -632,12 +643,13 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
             $replies = arduino_replies();
             $max_replies = max_replies_arduino();
 
+            //Credits for the machine, 1 tweet = 1 credit
+            $credits_for_machine = 0;
+
             if($nbrTweets > 0){
 
                 //Add people into an array to only send one tweet per person
                 $peopleAlreadyRepliedToo = array();
-                //Credits for the machine, 1 tweet = 1 credit
-                $credits_for_machine = 0;
 
                 //printl($response);
 
@@ -685,7 +697,7 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                                     //Grab a random reply based on the number of times that person tweeted
                                     $reply = $first_replies[array_rand($first_replies)];
                                     //Reply to user
-                                    sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                                    //sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
                                 }
                                 if($user_nbr_tweets == 2){
                                     /*
@@ -698,7 +710,7 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
                                     //NO FOLLOWING
                                     //Reply to user
                                     $reply = $second_replies_following[array_rand($second_replies_following)];
-                                    sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                                    //sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
 
                                 }
                                 if($user_nbr_tweets >= 3 && $user_nbr_tweets <= $max_replies){
@@ -707,7 +719,7 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
 
                                     //NO FOLLOWING
                                     //tweet the person
-                                    sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
+                                    //sendNoDuplicatedTweets($tweet->user->screen_name, $reply);
 
                                     /*
                                     //FOLLOWING
