@@ -216,16 +216,20 @@ function get_content_curl($request, $header){
 *
 * $remainCall = (int) number of remaining calls found in Header response
 * $reset = (String) unixtimestamp for when the limit will be rateReset
-* $callRateSeconds = (float) "Make 1 call every xx seconds" ($callRateSeconds = xx)
 */
-$callRateSeconds;
 function rateLimit($remainCalls, $reset){
-  global $callRateSeconds;
   //Mins left until Reset
   $minsRemain = date_diff(date_create_from_format('U', $reset), date_create_from_format('U', time()));
   //Call rate as in "Make 1 call every xx seconds"
   $callRateSeconds = ($minsRemain->i*60)/$remainCalls;
-	//CallRateSeconds needs to be stored in DB here instead
+	/*printl('New Call Rate');
+	printl($callRateSeconds);
+	printl('New Remain Calls');
+	printl($remainCalls);
+	printl('Remaining time');
+	printl((date_create_from_format('U', $reset)));*/
+	//CallRateSeconds store in DB
+	saveCallRateSeconds(array('call_rate_seconds' => $callRateSeconds));
 }
 
 /**
@@ -234,20 +238,20 @@ function rateLimit($remainCalls, $reset){
 * return TRUE or FALSE
 */
 function openForQuering(){
-  global $callRateSeconds;
 	//Always assume it's good to go
   $o = TRUE;
-  //Check if this is the first call
+  //Get the previous call timetstamp
 	$latestCallTime = get_latest_timestamp();
-	//Check if you can make a call
+	//Calculate the time difference between last call and current call
 	$diff = date_diff(date_create_from_format('U', $latestCallTime), date_create_from_format('U', time()));
 	//Only bother if the difference is in hours/mins/seconds
 	if ($diff->y == 0 && $diff->m == 0 && $diff->d == 0){
-		//Calculate the difference in seconds
+		//Addition the difference in seconds
 		$diffInSecs = ($diff->h*3600)+($diff->i*60)+($diff->s);
+		//Get Call rate
+		$callRateSeconds = get_call_rate_seconds();
 		// if it's more that the callRateSeconds(Make 1 call every xx seconds) than set to False
-
-		if($diffInSecs < //CallRateSeconds needs to be called from DB here) {
+		if($diffInSecs < $callRateSeconds) {
 			$o = FALSE;
 		}else{
 			//If it's bigger then keep it TRUE and Save Timestamp for next time
@@ -257,9 +261,9 @@ function openForQuering(){
 		//If it's bigger than hours then keep it TRUE and Save Timestamp for next time
 		saveCurrentTimeStamp(array('latest_query_timestamp' => time()));
 	}
-	var_dump($o);
+	/*var_dump($o);
 	printl($callRateSeconds);
-	printl($diff);
+	printl($diff);*/
   return $o;
 }
 

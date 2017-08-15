@@ -54,7 +54,7 @@ function agentSmith($mysqli, $rawContent, $order = 'main'){
     if($order === 'main'){
         //Check For Legal Caracters
         //$charAccepted = "/^[A-Za-z0-9 \_\%\�\$\@\-]{1,1000}$/";
-        $charAccepted = "/^[A-Za-z0-9 \_\%\�\$\@\-\+]{1,1000}$/";
+        $charAccepted = "/^[A-Za-z0-9 \_\%\�\$\@\-\.\+]{1,1000}$/";
         if(is_array($rawContent)){
          foreach($rawContent as $key => $value){
              //If it macth then populate the cleaned Array with the Raw Array Values
@@ -243,13 +243,23 @@ function savePeople($content, $tableName, $max = 500){
 }
 
 /*
- * Save Latest Query timestamp
+ * Save Call Rate in Seconds: "Make 1 call every xx seconds"
+ * $content: An array that will be transformed into a string for UPDATE mysql
+ * $content: array('callRateSeconds' => float)
+ */
+function saveCallRateSeconds($content){
+  updateGeneralDB($content);
+}
+
+/*
+ * Save Rate
  * $content: An array that will be transformed into a string for UPDATE mysql
  * $content: array('latest_query_timestamp' => time())
  */
 function saveCurrentTimeStamp($content){
   updateGeneralDB($content);
 }
+
 /*
  * Add to DB
  */
@@ -329,6 +339,18 @@ function get_users(){
 function get_latest_timestamp(){
         return get_data_from_DB('tweetsfortreats_general', FALSE, 'latest_query_timestamp');
 }
+/*
+ * Get Latest Query Call Time stamp
+ */
+function get_call_rate_seconds(){
+        return get_data_from_DB('tweetsfortreats_general', FALSE, 'call_rate_seconds');
+}
+/*
+ * Get Data from DB
+ * $tableName = DB table name
+ * $all = (Bool) return all fiedls or not
+ * $field = field to retrieve if $all is to false
+ */
 function get_data_from_DB($tableName, $all = false, $field = 'id'){
         $mysqli = connectToDatabase($tableName);
 	if(is_object($mysqli)){
