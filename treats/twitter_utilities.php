@@ -851,7 +851,7 @@ function searchTwitter($result_type, $count, $since_id, $hastag = NULL){
 			}
             echo "<mode>A</mode>";
             echo "<nbr_tweets>".$credits_for_machine."</nbr_tweets>";
-			echo "<max_id_str>".$since_id."</max_id_str>";
+						echo "<max_id_str>".$since_id."</max_id_str>";
 
 		}
 		//WEBSITE
@@ -937,7 +937,16 @@ function arduino_get_queries(){
             //API REQUEST
             if(isset($_GET["result_type"])){
                 //searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"], urlencode($_GET["token"]));
-                if(openForQuering() === TRUE ) searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"]);
+								// if within the call rate then do the search query
+								if(openForQuering() === TRUE ) {
+									searchTwitter($_GET["result_type"], $_GET["count"], $_GET["since_id"]);
+								}
+								//If not whitin just pretend that there is no tweets
+								else{
+									echo "<mode>A</mode>";
+			            echo "<nbr_tweets>0</nbr_tweets>";
+									echo "<max_id_str>".(isset($_GET["since_id"]) ? $_GET["since_id"] : 0)."</max_id_str>";
+								}
                 //Exit php as we don't want to send back the rest the page
                 exit;
             }
@@ -973,13 +982,11 @@ function website_post_queries(){
 	if(isset($_POST["results"]) && !empty($_POST["results"])){
 		$hashtag = NULL;
 		if(isset($_POST["hashtag"]) && !empty($_POST["hashtag"])) $hashtag = $_POST["hashtag"];
-		if(openForQuering() === TRUE ) {
-      $response = searchTwitter("recent", $_POST["results"], $_POST["since_id"], $hashtag);
+		  $response = searchTwitter("recent", $_POST["results"], $_POST["since_id"], $hashtag);
   		if($response) {
   			//Header('Content-type: text/javascript; charset=UTF-8');
   			echo json_encode($response);
   		}
-    }
 		//Exit php as we don't want to send back the rest the page
 		exit;
 	}
@@ -991,13 +998,11 @@ function website_get_queries(){
 	if(isset($_GET["results"]) && !empty($_GET["results"])){
 		$hashtag = NULL;
 		if(isset($_GET["hashtag"]) && !empty($_GET["hashtag"])) $hashtag = $_GET["hashtag"];
-		if(openForQuering() === TRUE ) {
       $response = searchTwitter("recent", $_GET["results"], $_GET["since_id"], $hashtag);
   		if($response) {
   			//Header('Content-type: text/javascript; charset=UTF-8');
   			echo json_encode($response);
   		}
-    }
 		//Exit php as we don't want to send back the rest the page
 		exit;
 	}
