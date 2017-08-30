@@ -26,7 +26,7 @@ else{
     define('HOST', '127.0.0.1');
 }*/
 //TESTING ARDUINO: FORCE IT
-define('URL', 'http://192.168.0.13/tweetsfortreats.com');
+define('URL', 'http://192.168.0.18/tweetsfortreats.com');
 define('HOST', '127.0.0.1');
 
 
